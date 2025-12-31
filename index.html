@@ -238,6 +238,41 @@ th{background:#020617;}
 </div>
 
 <script>
+
+  sessionStorage.clear();
+
+  /* ========================= */
+/* LOGIN LOGIC               */
+/* ========================= */
+
+const USERS = [
+  { user: "admin", pass: "bbcss123" },
+  { user: "ops", pass: "ops123" }
+];
+
+function login() {
+  const u = document.getElementById("username").value.trim();
+  const p = document.getElementById("password").value.trim();
+
+  const valid = USERS.find(x => x.user === u && x.pass === p);
+
+  if (!valid) {
+    document.getElementById("loginError").innerText = "Invalid credentials";
+    return;
+  }
+
+  sessionStorage.setItem("bbcss_logged_in", "true");
+  document.getElementById("loginScreen").style.display = "none";
+}
+
+function checkLogin() {
+  const loggedIn = sessionStorage.getItem("bbcss_logged_in") === "true";
+  document.getElementById("loginScreen").style.display =
+    loggedIn ? "none" : "flex";
+}
+
+document.addEventListener("DOMContentLoaded", checkLogin);
+
 const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
 const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
 const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
@@ -374,6 +409,7 @@ async function initMap(){
 
 </body>
 </html>
+
 
 
 
