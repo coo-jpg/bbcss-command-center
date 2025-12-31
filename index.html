@@ -137,6 +137,38 @@ button{
 button:hover{background:#1e293b;}
 
 .empty{color:#6b7280;}
+/* TRAINING SECTION */
+.training-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.training-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.training-meta .label {
+  display: block;
+  font-size: 11px;
+  color: #9ca3af;
+  margin-bottom: 2px;
+}
+
+.training-meta .value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.training-image img {
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #1f2937;
+  background: #020617;
+}
 
 /* TABLE */
 table{
@@ -347,6 +379,31 @@ function updatePanel(site){
   <div class="section"><h3>ABSCONDING</h3><div class="content">${guardsTable(abs)}</div></div>
   `;
 }
+  <div class="section">
+  <h3>LAST TRAINING CONDUCTED</h3>
+
+  <div class="content training-card">
+    <div class="training-meta">
+      <div>
+        <span class="label">Date</span>
+        <span class="value">18 Dec 2025</span>
+      </div>
+
+      <div>
+        <span class="label">Type</span>
+        <span class="value">Fire Safety Drill</span>
+      </div>
+    </div>
+
+    <div class="training-image">
+      <img
+        src="https://via.placeholder.com/600x360?text=Training+Image"
+        alt="Training Evidence"
+      >
+    </div>
+  </div>
+</div>
+
 
 function renderSites(sites){
   markers.forEach(m=>m.setMap(null));
@@ -408,6 +465,7 @@ async function initMap(){
 
 </body>
 </html>
+
 
 
 
