@@ -68,7 +68,7 @@ html,body{
   color:#fff;
   font-weight:600;
 }
-#loginError{color:#ef4444;font-size:12px;}
+#loginError{color:#ef4444;font-size:12px}
 
 /* LAYOUT */
 .container{
@@ -105,6 +105,7 @@ button{
   background:#020617;
   border:1px solid #2563eb;
   color:#e5e7eb;
+  cursor:pointer;
 }
 .empty{color:#6b7280}
 
@@ -194,15 +195,14 @@ th{background:#020617;}
 /* LOGIN */
 const USERS=[{user:"admin",pass:"bbcss123"},{user:"ops",pass:"ops123"}];
 function login(){
-  const u=username.value,p=password.value;
-  if(!USERS.find(x=>x.user===u&&x.pass===p)){
-    loginError.innerText="Invalid credentials";return;
+  if(!USERS.find(x=>x.user===username.value && x.pass===password.value)){
+    loginError.innerText="Invalid credentials"; return;
   }
   sessionStorage.setItem("bbcss","1");
   loginScreen.style.display="none";
   start();
 }
-if(sessionStorage.getItem("bbcss")==="1")loginScreen.style.display="none";
+if(sessionStorage.getItem("bbcss")==="1") loginScreen.style.display="none";
 
 /* DATA */
 const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
@@ -211,31 +211,51 @@ const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
 const TRAINING_URL=`https://opensheet.elk.sh/${SHEET_ID}/Training`;
 
 let map,allSites=[],guards=[],trainings=[],markers=[],currentSites=[];
+let lastClickedSite=null,startPoint=null,endPoint=null;
 
 /* MAP */
-function start(){if(!window.google)return setTimeout(start,300);initMap();}
+function start(){ if(!window.google) return setTimeout(start,300); initMap(); }
 async function initMap(){
-  map=new google.maps.Map(mapDiv,{center:{lat:17.5,lng:78.4},zoom:7});
+  map=new google.maps.Map(document.getElementById("map"),{center:{lat:17.5,lng:78.4},zoom:7});
   guards=await fetch(GUARDS_URL).then(r=>r.json());
   trainings=await fetch(TRAINING_URL).then(r=>r.json());
   allSites=await fetch(SITES_URL).then(r=>r.json());
   filterState("ALL");
 }
-const mapDiv=document.getElementById("map");
 
+/* HELPERS */
+function guardsTable(list){
+  if(!list.length) return "<div class='empty'>No guards</div>";
+  return `<table>
+    <tr><th>#</th><th>Name</th><th>Rank</th><th>Status</th></tr>
+    ${list.map((g,i)=>`
+      <tr class="${g["Duty Status"]==="On Duty"?"on-duty":g["Duty Status"]==="Off Duty"?"off-duty":"absconding"}">
+        <td>${i+1}</td>
+        <td>${g["Guard Name"]}</td>
+        <td>${g.Rank||"-"}</td>
+        <td>${g["Duty Status"]}</td>
+      </tr>`).join("")}
+  </table>`;
+}
+
+/* FILTER */
 function filterState(state){
   currentSites=state==="ALL"?allSites:allSites.filter(s=>s.State===state);
-  markers.forEach(m=>m.setMap(null));markers=[];
+  markers.forEach(m=>m.setMap(null)); markers=[];
   currentSites.forEach(site=>{
     const m=new google.maps.Marker({
       map,position:{lat:+site.Latitude,lng:+site.Longitude},title:site.Name
     });
-    m.addListener("click",()=>showSite(site));
+    m.addListener("click",()=>{
+      lastClickedSite={lat:+site.Latitude,lng:+site.Longitude,name:site.Name};
+      showSite(site);
+    });
     markers.push(m);
   });
   updateSummary();
 }
 
+/* SITE PANEL */
 function showSite(site){
   const siteGuards=guards.filter(g=>g.Name===site.Name);
   const training=trainings
@@ -244,11 +264,15 @@ function showSite(site){
 
   sitePanel.innerHTML=`
   <div class="section"><h3>Site Details</h3><div class="content">
-    <b>${site.Name}</b><br>${site.ClientName||""}
+    <b>${site.Name}</b><br>
+    ${site.ClientName||""}<br>
+    ${site.ClientPhone||""}<br><br>
+    ${site.SiteDescription||""}<br><br>
+    ${site.ReferenceLink?`<a href="${site.ReferenceLink}" target="_blank" style="color:#60a5fa">Reference</a>`:""}
   </div></div>
 
   <div class="section"><h3>Last Training</h3>
-  ${training?`
+    ${training?`
     <div class="content training-card">
       <div class="training-meta">
         <div><span class="label">Date</span><span class="value">${training["Training Date"]}</span></div>
@@ -258,10 +282,26 @@ function showSite(site){
     </div>`:`<div class="content empty">No training record</div>`}
   </div>
 
+  <div class="section"><h3>Route & Navigation</h3>
+    <div class="content">
+      <button onclick="startPoint=lastClickedSite">Set Start</button><br><br>
+      <button onclick="endPoint=lastClickedSite">Set Destination</button><br><br>
+      <button onclick="openRoute()">Open in Google Maps</button>
+    </div>
+  </div>
+
   <div class="section"><h3>Guards</h3>
-  <div class="content">${siteGuards.length}</div></div>`;
+    <div class="content">${guardsTable(siteGuards)}</div>
+  </div>`;
 }
 
+/* ROUTE */
+function openRoute(){
+  if(!startPoint||!endPoint) return alert("Set start and destination");
+  window.open(`https://www.google.com/maps/dir/?api=1&origin=${startPoint.lat},${startPoint.lng}&destination=${endPoint.lat},${endPoint.lng}`);
+}
+
+/* SUMMARY */
 function updateSummary(){
   const names=currentSites.map(s=>s.Name);
   const g=guards.filter(x=>names.includes(x.Name));
@@ -273,7 +313,7 @@ function updateSummary(){
 }
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
 
 </body>
 </html>
