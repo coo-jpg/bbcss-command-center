@@ -30,69 +30,45 @@ html,body{
   font-size:18px;
   font-weight:600;
 }
-  /* ========================= */
-/* LOGIN SCREEN              */
-/* ========================= */
 
-#loginScreen {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at top, #020617, #000);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+/* LOGIN */
+#loginScreen{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at top,#020617,#000);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
 }
-
-.login-box {
-  width: 360px;
-  background: #0f172a;
-  padding: 32px;
-  border-radius: 10px;
-  border: 1px solid #1f2937;
-  text-align: center;
-  box-shadow: 0 0 40px rgba(0,0,0,0.6);
+.login-box{
+  width:360px;
+  background:#0f172a;
+  padding:32px;
+  border-radius:10px;
+  border:1px solid #1f2937;
+  text-align:center;
 }
-
-.login-logo {
-  width: 140px;
-  margin-bottom: 18px;
+.login-logo{width:140px;margin-bottom:18px;}
+.login-box input{
+  width:100%;
+  padding:11px;
+  margin-bottom:12px;
+  background:#020617;
+  border:1px solid #1f2937;
+  border-radius:6px;
+  color:#e5e7eb;
 }
-
-.login-box h2 {
-  font-size: 18px;
-  margin-bottom: 20px;
-  font-weight: 600;
+.login-box button{
+  width:100%;
+  padding:11px;
+  background:#2563eb;
+  border:none;
+  border-radius:6px;
+  color:#fff;
+  font-weight:600;
 }
-
-.login-box input {
-  width: 100%;
-  padding: 11px;
-  margin-bottom: 12px;
-  background: #020617;
-  border: 1px solid #1f2937;
-  border-radius: 6px;
-  color: #e5e7eb;
-  font-size: 14px;
-}
-
-.login-box button {
-  width: 100%;
-  padding: 11px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-#loginError {
-  color: #ef4444;
-  font-size: 12px;
-  margin-top: 12px;
-}
-
+#loginError{color:#ef4444;font-size:12px;}
 
 /* LAYOUT */
 .container{
@@ -108,16 +84,14 @@ html,body{
   padding:14px;
   overflow-y:auto;
 }
-
 .section{margin-bottom:14px;}
 .section h3{
   font-size:13px;
-  margin:0 0 6px;
   padding:6px 8px;
   background:#020617;
   border-left:4px solid #2563eb;
+  margin:0 0 6px;
   text-transform:uppercase;
-  cursor:pointer;
 }
 .section .content{
   background:#0b1220;
@@ -125,63 +99,30 @@ html,body{
   border:1px solid #1f2937;
   font-size:13px;
 }
-
 button{
   width:100%;
   padding:6px;
   background:#020617;
-  color:#e5e7eb;
   border:1px solid #2563eb;
-  cursor:pointer;
+  color:#e5e7eb;
 }
-button:hover{background:#1e293b;}
+.empty{color:#6b7280}
 
-.empty{color:#6b7280;}
-/* TRAINING SECTION */
-.training-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.training-meta {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.training-meta .label {
-  display: block;
-  font-size: 11px;
-  color: #9ca3af;
-  margin-bottom: 2px;
-}
-
-.training-meta .value {
-  font-size: 13px;
-  font-weight: 600;
-  color: #e5e7eb;
-}
-
-.training-image img {
-  width: 100%;
-  border-radius: 6px;
-  border: 1px solid #1f2937;
-  background: #020617;
+/* TRAINING */
+.training-card{display:flex;flex-direction:column;gap:10px;}
+.training-meta{display:flex;justify-content:space-between;}
+.training-meta .label{font-size:11px;color:#9ca3af;}
+.training-meta .value{font-weight:600;}
+.training-image img{
+  width:100%;
+  border-radius:6px;
+  border:1px solid #1f2937;
 }
 
 /* TABLE */
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:12px;
-}
-th,td{
-  padding:5px;
-  border:1px solid #1f2937;
-}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th,td{padding:5px;border:1px solid #1f2937;}
 th{background:#020617;}
-
 .on-duty{background:rgba(16,185,129,0.15);}
 .off-duty{background:rgba(245,158,11,0.15);}
 .absconding{background:rgba(239,68,68,0.25);font-weight:bold;}
@@ -192,48 +133,35 @@ th{background:#020617;}
 /* SUMMARY */
 #summaryPanel{
   position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
+  bottom:0;left:0;right:0;
   height:54px;
   background:#020617;
   border-top:1px solid #1f2937;
   display:flex;
   justify-content:space-around;
   align-items:center;
-  font-size:12px;
 }
-.summary-item{text-align:center;}
+.summary-item{text-align:center;font-size:12px;}
 .summary-item .label{color:#9ca3af;font-size:11px;}
 .summary-item .value{font-size:16px;font-weight:bold;}
 </style>
 </head>
 
 <body>
-  <!-- LOGIN SCREEN -->
+
+<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-box">
-
-    <img
-      src="https://lh3.googleusercontent.com/d/12Xf4kpshWWpf-TntBM7dCTNyemEWPeUt"
-      class="login-logo"
-      alt="BBCSS Logo"
-      referrerpolicy="no-referrer"
-    >
-
-    <h2>BBCSS Command Center</h2>
-
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-
+    <img src="https://lh3.googleusercontent.com/d/12Xf4kpshWWpf-TntBM7dCTNyemEWPeUt" class="login-logo">
+    <h3>BBCSS Command Center</h3>
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
     <button onclick="login()">Login</button>
-
     <p id="loginError"></p>
-
   </div>
 </div>
 
-
+<!-- HEADER -->
 <div id="header">
   <img src="https://lh3.googleusercontent.com/d/12Xf4kpshWWpf-TntBM7dCTNyemEWPeUt" class="logo">
   <div class="header-title">BBCSS Command Center</div>
@@ -241,267 +169,111 @@ th{background:#020617;}
 
 <div class="container">
   <div id="sidebar">
-
-    <!-- STATE FILTER -->
     <div class="section">
-      <h3 onclick="toggleStatePanel()">STATE VIEW <span id="stateIcon">▾</span></h3>
-      <div class="content" id="statePanel">
-        <button onclick="filterState('ALL')">🌐 All States</button><br><br>
+      <h3>STATE VIEW</h3>
+      <div class="content">
+        <button onclick="filterState('ALL')">All States</button><br><br>
         <button onclick="filterState('Telangana')">Telangana</button><br><br>
         <button onclick="filterState('Karnataka')">Karnataka</button>
       </div>
     </div>
-
-    <div id="sitePanel" class="empty">
-      Click a site pin to view details
-    </div>
-
+    <div id="sitePanel" class="empty">Click a site pin</div>
   </div>
-
   <div id="map"></div>
 </div>
 
 <div id="summaryPanel">
-  <div class="summary-item"><div class="label">Sites</div><div class="value" id="sumSites">0</div></div>
-  <div class="summary-item"><div class="label">Guards</div><div class="value" id="sumGuards">0</div></div>
-  <div class="summary-item"><div class="label">On Duty</div><div class="value" id="sumOn">0</div></div>
-  <div class="summary-item"><div class="label">Off Duty</div><div class="value" id="sumOff">0</div></div>
-  <div class="summary-item"><div class="label">Absconding</div><div class="value" id="sumAbs">0</div></div>
+  <div class="summary-item"><div class="label">Sites</div><div id="sumSites" class="value">0</div></div>
+  <div class="summary-item"><div class="label">Guards</div><div id="sumGuards" class="value">0</div></div>
+  <div class="summary-item"><div class="label">On Duty</div><div id="sumOn" class="value">0</div></div>
+  <div class="summary-item"><div class="label">Off Duty</div><div id="sumOff" class="value">0</div></div>
+  <div class="summary-item"><div class="label">Absconding</div><div id="sumAbs" class="value">0</div></div>
 </div>
 
 <script>
-
-
-  /* ========================= */
-/* LOGIN LOGIC               */
-/* ========================= */
-
-const USERS = [
-  { user: "admin", pass: "bbcss123" },
-  { user: "ops", pass: "ops123" }
-];
-
-function login() {
-  const u = document.getElementById("username").value.trim();
-  const p = document.getElementById("password").value.trim();
-
-  const valid = USERS.find(x => x.user === u && x.pass === p);
-
-  if (!valid) {
-    document.getElementById("loginError").innerText = "Invalid credentials";
-    return;
+/* LOGIN */
+const USERS=[{user:"admin",pass:"bbcss123"},{user:"ops",pass:"ops123"}];
+function login(){
+  const u=username.value,p=password.value;
+  if(!USERS.find(x=>x.user===u&&x.pass===p)){
+    loginError.innerText="Invalid credentials";return;
   }
-
-  sessionStorage.setItem("bbcss_logged_in", "true");
-  document.getElementById("loginScreen").style.display = "none";
-
-  startDashboard(); // ✅ start app AFTER login
+  sessionStorage.setItem("bbcss","1");
+  loginScreen.style.display="none";
+  start();
 }
+if(sessionStorage.getItem("bbcss")==="1")loginScreen.style.display="none";
 
-
-function checkLogin() {
-  const loggedIn = sessionStorage.getItem("bbcss_logged_in") === "true";
-  if (loggedIn) {
-    document.getElementById("loginScreen").style.display = "none";
-    startDashboard(); // ✅ auto-start after refresh
-  } else {
-    document.getElementById("loginScreen").style.display = "flex";
-  }
-}
-
-
-document.addEventListener("DOMContentLoaded", checkLogin);
-
-  function startDashboard() {
-  if (!window.google || !google.maps) {
-    setTimeout(startDashboard, 300);
-    return;
-  }
-  initMap();
-}
-
-
+/* DATA */
 const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
 const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
 const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
-const TRAINING_URL = `https://opensheet.elk.sh/${SHEET_ID}/Training`;
-let map,allSites=[],guards=[],markers=[];
-let lastClickedSite=null,startPoint=null,endPoint=null;
-let stateOpen=true;
-let trainings = [];
+const TRAINING_URL=`https://opensheet.elk.sh/${SHEET_ID}/Training`;
 
+let map,allSites=[],guards=[],trainings=[],markers=[],currentSites=[];
 
-/* COLLAPSE STATE */
-function toggleStatePanel(){
-  stateOpen=!stateOpen;
-  document.getElementById("statePanel").style.display=stateOpen?"block":"none";
-  document.getElementById("stateIcon").innerText=stateOpen?"▾":"▸";
+/* MAP */
+function start(){if(!window.google)return setTimeout(start,300);initMap();}
+async function initMap(){
+  map=new google.maps.Map(mapDiv,{center:{lat:17.5,lng:78.4},zoom:7});
+  guards=await fetch(GUARDS_URL).then(r=>r.json());
+  trainings=await fetch(TRAINING_URL).then(r=>r.json());
+  allSites=await fetch(SITES_URL).then(r=>r.json());
+  filterState("ALL");
 }
-
-function dutyClass(s){
-  if(s==="On Duty")return"on-duty";
-  if(s==="Off Duty")return"off-duty";
-  if(s==="Absconding")return"absconding";
-  return"";
-}
-
-function guardsTable(list){
-  if(!list.length)return"<p class='empty'>None</p>";
-  return`
-  <table>
-    <thead><tr><th>#</th><th>Name</th><th>Rank</th><th>Shift</th></tr></thead>
-    <tbody>
-    ${list.map((g,i)=>`
-      <tr class="${dutyClass(g["Duty Status"])}">
-        <td>${i+1}</td>
-        <td>${g["Guard Name"]}</td>
-        <td>${g.Rank}</td>
-        <td>${g.Shift||"-"}</td>
-      </tr>`).join("")}
-    </tbody>
-  </table>`;
-}
-
-function updatePanel(site){
-  const siteGuards=guards.filter(g=>g.Name?.trim()===site.Name.trim());
-  const on=siteGuards.filter(g=>g["Duty Status"]==="On Duty");
-  const off=siteGuards.filter(g=>g["Duty Status"]==="Off Duty");
-  const abs=siteGuards.filter(g=>g["Duty Status"]==="Absconding");
-  const siteTrainings = trainings
-  .filter(t => t["Site.Name"]?.trim() === site.Name.trim())
-  .sort((a, b) => new Date(b["Training Date"]) - new Date(a["Training Date"]));
-
-const training = siteTrainings[0]; // latest training only
-
-
-document.getElementById("sitePanel").innerHTML = `
-  <div class="section">
-    <h3>SITE DETAILS</h3>
-    <div class="content">
-      <b>Site Name:</b> ${site.Name}<br><br>
-      <b>Client:</b> ${site.ClientName || "—"}<br>
-      <b>Client Phone:</b> ${site.ClientPhone || "—"}<br><br>
-      <b>Description:</b><br>
-      ${site.SiteDescription || "No description available"}<br><br>
-      <b>Reference:</b>
-      ${site.ReferenceLink
-        ? `<a href="${site.ReferenceLink}" target="_blank" style="color:#60a5fa">Open Link</a>`
-        : `<span class="empty">Link not added</span>`}
-    </div>
-  </div>
-document.getElementById("sitePanel").innerHTML = `
-  <div class="section">
-    <h3>SITE DETAILS</h3>
-    ...
-  </div>
-
-  <!-- ✅ STEP 3 GOES EXACTLY HERE -->
-  ${training ? `
-    <div class="section">
-      <h3>LAST TRAINING CONDUCTED</h3>
-      ...
-    </div>
-  ` : `
-    <div class="section">
-      <h3>LAST TRAINING CONDUCTED</h3>
-      <div class="content empty">No training record available</div>
-    </div>
-  `}
-
-  <div class="section">
-    <h3>ROUTE & NAVIGATION</h3>
-    ...
-  </div>
-`;
-}
-
-  <div class="section">
-    <h3>ROUTE & NAVIGATION</h3>
-    <div class="content">
-      <button onclick="setStart()">📍 Set as Start</button><br><br>
-      <button onclick="setEnd()">🏁 Set as Destination</button><br><br>
-      <button onclick="openRoute()">🗺 Open in Google Maps</button>
-    </div>
-  </div>
-
-  <div class="section"><h3>ON DUTY</h3><div class="content">${guardsTable(on)}</div></div>
-  <div class="section"><h3>OFF DUTY</h3><div class="content">${guardsTable(off)}</div></div>
-  <div class="section"><h3>ABSCONDING</h3><div class="content">${guardsTable(abs)}</div></div>
-`;
-}
-
-
-function renderSites(sites){
-  markers.forEach(m=>m.setMap(null));
-  markers=[];
-  sites.forEach(site=>{
-    const lat=parseFloat(site.Latitude),lng=parseFloat(site.Longitude);
-    if(isNaN(lat)||isNaN(lng))return;
-    const m=new google.maps.Marker({map,position:{lat,lng},title:site.Name});
-    m.addListener("click",()=>{
-      lastClickedSite={lat,lng,name:site.Name};
-      updatePanel(site);
-    });
-    markers.push(m);
-  });
-  updateSummary(sites);
-}
+const mapDiv=document.getElementById("map");
 
 function filterState(state){
-  const f=state==="ALL"?allSites:allSites.filter(s=>s.State===state);
-  renderSites(f);
+  currentSites=state==="ALL"?allSites:allSites.filter(s=>s.State===state);
+  markers.forEach(m=>m.setMap(null));markers=[];
+  currentSites.forEach(site=>{
+    const m=new google.maps.Marker({
+      map,position:{lat:+site.Latitude,lng:+site.Longitude},title:site.Name
+    });
+    m.addListener("click",()=>showSite(site));
+    markers.push(m);
+  });
+  updateSummary();
 }
 
-function setStart(){startPoint=lastClickedSite;alert("Start set");}
-function setEnd(){endPoint=lastClickedSite;alert("Destination set");}
-function openRoute(){
-  if(!startPoint||!endPoint)return alert("Select both points");
-  window.open(`https://www.google.com/maps/dir/?api=1&origin=${startPoint.lat},${startPoint.lng}&destination=${endPoint.lat},${endPoint.lng}`);
+function showSite(site){
+  const siteGuards=guards.filter(g=>g.Name===site.Name);
+  const training=trainings
+    .filter(t=>t["Site.Name"]===site.Name)
+    .sort((a,b)=>new Date(b["Training Date"])-new Date(a["Training Date"]))[0];
+
+  sitePanel.innerHTML=`
+  <div class="section"><h3>Site Details</h3><div class="content">
+    <b>${site.Name}</b><br>${site.ClientName||""}
+  </div></div>
+
+  <div class="section"><h3>Last Training</h3>
+  ${training?`
+    <div class="content training-card">
+      <div class="training-meta">
+        <div><span class="label">Date</span><span class="value">${training["Training Date"]}</span></div>
+        <div><span class="label">Type</span><span class="value">${training["TrainingType"]}</span></div>
+      </div>
+      <div class="training-image"><img src="${training["Training image url"]}"></div>
+    </div>`:`<div class="content empty">No training record</div>`}
+  </div>
+
+  <div class="section"><h3>Guards</h3>
+  <div class="content">${siteGuards.length}</div></div>`;
 }
 
-function updateSummary(sites){
-  // Names of sites currently visible (after state filter)
-  const visibleSiteNames = sites.map(s => s.Name?.trim());
-
-  // Guards belonging only to visible sites
-  const visibleGuards = guards.filter(g =>
-    visibleSiteNames.includes(g.Name?.trim())
-  );
-
-  const on = visibleGuards.filter(g => g["Duty Status"] === "On Duty").length;
-  const off = visibleGuards.filter(g => g["Duty Status"] === "Off Duty").length;
-  const abs = visibleGuards.filter(g => g["Duty Status"] === "Absconding").length;
-
-  document.getElementById("sumSites").innerText = sites.length;
-  document.getElementById("sumGuards").innerText = visibleGuards.length;
-  document.getElementById("sumOn").innerText = on;
-  document.getElementById("sumOff").innerText = off;
-  document.getElementById("sumAbs").innerText = abs;
-}
-
-async function initMap(){
-  map=new google.maps.Map(document.getElementById("map"),{center:{lat:17.5,lng:78.4},zoom:7});
- guards = await fetch(GUARDS_URL).then(r=>r.json());
-allSites = await fetch(SITES_URL).then(r=>r.json());
-trainings = await fetch(TRAINING_URL).then(r=>r.json());
-
-renderSites(allSites);
-
+function updateSummary(){
+  const names=currentSites.map(s=>s.Name);
+  const g=guards.filter(x=>names.includes(x.Name));
+  sumSites.innerText=currentSites.length;
+  sumGuards.innerText=g.length;
+  sumOn.innerText=g.filter(x=>x["Duty Status"]==="On Duty").length;
+  sumOff.innerText=g.filter(x=>x["Duty Status"]==="Off Duty").length;
+  sumAbs.innerText=g.filter(x=>x["Duty Status"]==="Absconding").length;
 }
 </script>
 
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI&callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
