@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>BBCSS Command Center</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+html,body{
+  height:100%;
+  margin:0;
+  background:#0b0f1a;
+  color:#e5e7eb;
+  font-family:Arial,sans-serif;
+}
+
+/* HEADER */
+#header{
+  height:64px;
+  background:#020617;
+  display:flex;
+  align-items:center;
+  padding:0 18px;
+  border-bottom:1px solid #1f2937;
+}
+.logo{height:40px;margin-right:14px;}
+.header-title{
+  flex:1;
+  text-align:center;
+  font-size:18px;
+  font-weight:600;
+}
+
+/* LAYOUT */
+.container{
+  display:flex;
+  height:calc(100vh - 64px - 54px);
+}
+
+/* SIDEBAR */
+#sidebar{
+  width:420px;
+  background:#0f172a;
+  border-right:1px solid #1f2937;
+  padding:14px;
+  overflow-y:auto;
+}
+
+.section{margin-bottom:14px;}
+.section h3{
+  font-size:13px;
+  margin:0 0 6px;
+  padding:6px 8px;
+  background:#020617;
+  border-left:4px solid #2563eb;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.section .content{
+  background:#0b1220;
+  padding:8px;
+  border:1px solid #1f2937;
+  font-size:13px;
+}
+
+button{
+  width:100%;
+  padding:6px;
+  background:#020617;
+  color:#e5e7eb;
+  border:1px solid #2563eb;
+  cursor:pointer;
+}
+button:hover{background:#1e293b;}
+
+.empty{color:#6b7280;}
+
+/* TABLE */
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+}
+th,td{
+  padding:5px;
+  border:1px solid #1f2937;
+}
+th{background:#020617;}
+
+.on-duty{background:rgba(16,185,129,0.15);}
+.off-duty{background:rgba(245,158,11,0.15);}
+.absconding{background:rgba(239,68,68,0.25);font-weight:bold;}
+
+/* MAP */
+#map{flex:1;}
+
+/* SUMMARY */
+#summaryPanel{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:54px;
+  background:#020617;
+  border-top:1px solid #1f2937;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  font-size:12px;
+}
+.summary-item{text-align:center;}
+.summary-item .label{color:#9ca3af;font-size:11px;}
+.summary-item .value{font-size:16px;font-weight:bold;}
+</style>
+</head>
+
+<body>
+
+<div id="header">
+  <img src="https://lh3.googleusercontent.com/d/12Xf4kpshWWpf-TntBM7dCTNyemEWPeUt" class="logo">
+  <div class="header-title">BBCSS Command Center</div>
+</div>
+
+<div class="container">
+  <div id="sidebar">
+
+    <!-- STATE FILTER -->
+    <div class="section">
+      <h3 onclick="toggleStatePanel()">STATE VIEW <span id="stateIcon">▾</span></h3>
+      <div class="content" id="statePanel">
+        <button onclick="filterState('ALL')">🌐 All States</button><br><br>
+        <button onclick="filterState('Telangana')">Telangana</button><br><br>
+        <button onclick="filterState('Karnataka')">Karnataka</button>
+      </div>
+    </div>
+
+    <div id="sitePanel" class="empty">
+      Click a site pin to view details
+    </div>
+
+  </div>
+
+  <div id="map"></div>
+</div>
+
+<div id="summaryPanel">
+  <div class="summary-item"><div class="label">Sites</div><div class="value" id="sumSites">0</div></div>
+  <div class="summary-item"><div class="label">Guards</div><div class="value" id="sumGuards">0</div></div>
+  <div class="summary-item"><div class="label">On Duty</div><div class="value" id="sumOn">0</div></div>
+  <div class="summary-item"><div class="label">Off Duty</div><div class="value" id="sumOff">0</div></div>
+  <div class="summary-item"><div class="label">Absconding</div><div class="value" id="sumAbs">0</div></div>
+</div>
+
+<script>
+const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
+const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
+const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
+
+let map,allSites=[],guards=[],markers=[];
+let lastClickedSite=null,startPoint=null,endPoint=null;
+let stateOpen=true;
+
+/* COLLAPSE STATE */
+function toggleStatePanel(){
+  stateOpen=!stateOpen;
+  document.getElementById("statePanel").style.display=stateOpen?"block":"none";
+  document.getElementById("stateIcon").innerText=stateOpen?"▾":"▸";
+}
+
+function dutyClass(s){
+  if(s==="On Duty")return"on-duty";
+  if(s==="Off Duty")return"off-duty";
+  if(s==="Absconding")return"absconding";
+  return"";
+}
+
+function guardsTable(list){
+  if(!list.length)return"<p class='empty'>None</p>";
+  return`
+  <table>
+    <thead><tr><th>#</th><th>Name</th><th>Rank</th><th>Shift</th></tr></thead>
+    <tbody>
+    ${list.map((g,i)=>`
+      <tr class="${dutyClass(g["Duty Status"])}">
+        <td>${i+1}</td>
+        <td>${g["Guard Name"]}</td>
+        <td>${g.Rank}</td>
+        <td>${g.Shift||"-"}</td>
+      </tr>`).join("")}
+    </tbody>
+  </table>`;
+}
+
+function updatePanel(site){
+  const siteGuards=guards.filter(g=>g.Name?.trim()===site.Name.trim());
+  const on=siteGuards.filter(g=>g["Duty Status"]==="On Duty");
+  const off=siteGuards.filter(g=>g["Duty Status"]==="Off Duty");
+  const abs=siteGuards.filter(g=>g["Duty Status"]==="Absconding");
+
+  document.getElementById("sitePanel").innerHTML=`
+  <div class="section">
+    <h3>SITE DETAILS</h3>
+    <div class="content">
+      <b>Site Name:</b> ${site.Name}<br><br>
+      <b>Client:</b> ${site.ClientName||"—"}<br>
+      <b>Client Phone:</b> ${site.ClientPhone||"—"}<br><br>
+      <b>Description:</b><br>
+      ${site.SiteDescription||"No description available"}<br><br>
+      <b>Reference:</b>
+      ${site.ReferenceLink
+        ? `<a href="${site.ReferenceLink}" target="_blank" style="color:#60a5fa">Open Link</a>`
+        : `<span class="empty">Link not added</span>`}
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>ROUTE & NAVIGATION</h3>
+    <div class="content">
+      <button onclick="setStart()">📍 Set as Start</button><br><br>
+      <button onclick="setEnd()">🏁 Set as Destination</button><br><br>
+      <button onclick="openRoute()">🗺 Open in Google Maps</button>
+    </div>
+  </div>
+
+  <div class="section"><h3>ON DUTY</h3><div class="content">${guardsTable(on)}</div></div>
+  <div class="section"><h3>OFF DUTY</h3><div class="content">${guardsTable(off)}</div></div>
+  <div class="section"><h3>ABSCONDING</h3><div class="content">${guardsTable(abs)}</div></div>
+  `;
+}
+
+function renderSites(sites){
+  markers.forEach(m=>m.setMap(null));
+  markers=[];
+  sites.forEach(site=>{
+    const lat=parseFloat(site.Latitude),lng=parseFloat(site.Longitude);
+    if(isNaN(lat)||isNaN(lng))return;
+    const m=new google.maps.Marker({map,position:{lat,lng},title:site.Name});
+    m.addListener("click",()=>{
+      lastClickedSite={lat,lng,name:site.Name};
+      updatePanel(site);
+    });
+    markers.push(m);
+  });
+  updateSummary(sites);
+}
+
+function filterState(state){
+  const f=state==="ALL"?allSites:allSites.filter(s=>s.State===state);
+  renderSites(f);
+}
+
+function setStart(){startPoint=lastClickedSite;alert("Start set");}
+function setEnd(){endPoint=lastClickedSite;alert("Destination set");}
+function openRoute(){
+  if(!startPoint||!endPoint)return alert("Select both points");
+  window.open(`https://www.google.com/maps/dir/?api=1&origin=${startPoint.lat},${startPoint.lng}&destination=${endPoint.lat},${endPoint.lng}`);
+}
+
+function updateSummary(sites){
+  // Names of sites currently visible (after state filter)
+  const visibleSiteNames = sites.map(s => s.Name?.trim());
+
+  // Guards belonging only to visible sites
+  const visibleGuards = guards.filter(g =>
+    visibleSiteNames.includes(g.Name?.trim())
+  );
+
+  const on = visibleGuards.filter(g => g["Duty Status"] === "On Duty").length;
+  const off = visibleGuards.filter(g => g["Duty Status"] === "Off Duty").length;
+  const abs = visibleGuards.filter(g => g["Duty Status"] === "Absconding").length;
+
+  document.getElementById("sumSites").innerText = sites.length;
+  document.getElementById("sumGuards").innerText = visibleGuards.length;
+  document.getElementById("sumOn").innerText = on;
+  document.getElementById("sumOff").innerText = off;
+  document.getElementById("sumAbs").innerText = abs;
+}
+
+async function initMap(){
+  map=new google.maps.Map(document.getElementById("map"),{center:{lat:17.5,lng:78.4},zoom:7});
+  guards=await fetch(GUARDS_URL).then(r=>r.json());
+  allSites=await fetch(SITES_URL).then(r=>r.json());
+  renderSites(allSites);
+}
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI&callback=initMap" async defer></script>
+
+</body>
+</html>
+
