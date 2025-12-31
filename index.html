@@ -349,19 +349,38 @@ function updatePanel(site){
   const off=siteGuards.filter(g=>g["Duty Status"]==="Off Duty");
   const abs=siteGuards.filter(g=>g["Duty Status"]==="Absconding");
 
-  document.getElementById("sitePanel").innerHTML=`
+document.getElementById("sitePanel").innerHTML = `
   <div class="section">
     <h3>SITE DETAILS</h3>
     <div class="content">
       <b>Site Name:</b> ${site.Name}<br><br>
-      <b>Client:</b> ${site.ClientName||"—"}<br>
-      <b>Client Phone:</b> ${site.ClientPhone||"—"}<br><br>
+      <b>Client:</b> ${site.ClientName || "—"}<br>
+      <b>Client Phone:</b> ${site.ClientPhone || "—"}<br><br>
       <b>Description:</b><br>
-      ${site.SiteDescription||"No description available"}<br><br>
+      ${site.SiteDescription || "No description available"}<br><br>
       <b>Reference:</b>
       ${site.ReferenceLink
         ? `<a href="${site.ReferenceLink}" target="_blank" style="color:#60a5fa">Open Link</a>`
         : `<span class="empty">Link not added</span>`}
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>LAST TRAINING CONDUCTED</h3>
+    <div class="content training-card">
+      <div class="training-meta">
+        <div>
+          <span class="label">Date</span>
+          <span class="value">18 Dec 2025</span>
+        </div>
+        <div>
+          <span class="label">Type</span>
+          <span class="value">Fire Safety Drill</span>
+        </div>
+      </div>
+      <div class="training-image">
+        <img src="https://via.placeholder.com/600x360?text=Training+Image">
+      </div>
     </div>
   </div>
 
@@ -377,32 +396,7 @@ function updatePanel(site){
   <div class="section"><h3>ON DUTY</h3><div class="content">${guardsTable(on)}</div></div>
   <div class="section"><h3>OFF DUTY</h3><div class="content">${guardsTable(off)}</div></div>
   <div class="section"><h3>ABSCONDING</h3><div class="content">${guardsTable(abs)}</div></div>
-  `;
-}
-  <div class="section">
-  <h3>LAST TRAINING CONDUCTED</h3>
-
-  <div class="content training-card">
-    <div class="training-meta">
-      <div>
-        <span class="label">Date</span>
-        <span class="value">18 Dec 2025</span>
-      </div>
-
-      <div>
-        <span class="label">Type</span>
-        <span class="value">Fire Safety Drill</span>
-      </div>
-    </div>
-
-    <div class="training-image">
-      <img
-        src="https://via.placeholder.com/600x360?text=Training+Image"
-        alt="Training Evidence"
-      >
-    </div>
-  </div>
-</div>
+`;
 
 
 function renderSites(sites){
@@ -465,6 +459,7 @@ async function initMap(){
 
 </body>
 </html>
+
 
 
 
