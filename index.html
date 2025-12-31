@@ -30,6 +30,69 @@ html,body{
   font-size:18px;
   font-weight:600;
 }
+  /* ========================= */
+/* LOGIN SCREEN              */
+/* ========================= */
+
+#loginScreen {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top, #020617, #000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.login-box {
+  width: 360px;
+  background: #0f172a;
+  padding: 32px;
+  border-radius: 10px;
+  border: 1px solid #1f2937;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(0,0,0,0.6);
+}
+
+.login-logo {
+  width: 140px;
+  margin-bottom: 18px;
+}
+
+.login-box h2 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 11px;
+  margin-bottom: 12px;
+  background: #020617;
+  border: 1px solid #1f2937;
+  border-radius: 6px;
+  color: #e5e7eb;
+  font-size: 14px;
+}
+
+.login-box button {
+  width: 100%;
+  padding: 11px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#loginError {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 12px;
+}
+
 
 /* LAYOUT */
 .container{
@@ -115,6 +178,29 @@ th{background:#020617;}
 </head>
 
 <body>
+  <!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+
+    <img
+      src="https://lh3.googleusercontent.com/d/12Xf4kpshWWpf-TntBM7dCTNyemEWPeUt"
+      class="login-logo"
+      alt="BBCSS Logo"
+      referrerpolicy="no-referrer"
+    >
+
+    <h2>BBCSS Command Center</h2>
+
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <p id="loginError"></p>
+
+  </div>
+</div>
+
 
 <div id="header">
   <img src="https://lh3.googleusercontent.com/d/12Xf4kpshWWpf-TntBM7dCTNyemEWPeUt" class="logo">
@@ -288,5 +374,6 @@ async function initMap(){
 
 </body>
 </html>
+
 
 
