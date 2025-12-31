@@ -294,15 +294,32 @@ function login() {
 
   sessionStorage.setItem("bbcss_logged_in", "true");
   document.getElementById("loginScreen").style.display = "none";
+
+  startDashboard(); // ✅ start app AFTER login
 }
+
 
 function checkLogin() {
   const loggedIn = sessionStorage.getItem("bbcss_logged_in") === "true";
-  document.getElementById("loginScreen").style.display =
-    loggedIn ? "none" : "flex";
+  if (loggedIn) {
+    document.getElementById("loginScreen").style.display = "none";
+    startDashboard(); // ✅ auto-start after refresh
+  } else {
+    document.getElementById("loginScreen").style.display = "flex";
+  }
 }
 
+
 document.addEventListener("DOMContentLoaded", checkLogin);
+
+  function startDashboard() {
+  if (!window.google || !google.maps) {
+    setTimeout(startDashboard, 300);
+    return;
+  }
+  initMap();
+}
+
 
 const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
 const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
@@ -456,10 +473,12 @@ async function initMap(){
 }
 </script>
 
+
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI&callback=initMap" async defer></script>
 
 </body>
 </html>
+
 
 
 
