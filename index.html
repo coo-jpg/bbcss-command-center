@@ -324,10 +324,12 @@ document.addEventListener("DOMContentLoaded", checkLogin);
 const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
 const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
 const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
-
+const TRAINING_URL = `https://opensheet.elk.sh/${SHEET_ID}/Training`;
 let map,allSites=[],guards=[],markers=[];
 let lastClickedSite=null,startPoint=null,endPoint=null;
 let stateOpen=true;
+let trainings = [];
+
 
 /* COLLAPSE STATE */
 function toggleStatePanel(){
@@ -365,6 +367,12 @@ function updatePanel(site){
   const on=siteGuards.filter(g=>g["Duty Status"]==="On Duty");
   const off=siteGuards.filter(g=>g["Duty Status"]==="Off Duty");
   const abs=siteGuards.filter(g=>g["Duty Status"]==="Absconding");
+  const siteTrainings = trainings
+  .filter(t => t["Site.Name"]?.trim() === site.Name.trim())
+  .sort((a, b) => new Date(b["Training Date"]) - new Date(a["Training Date"]));
+
+const training = siteTrainings[0]; // latest training only
+
 
 document.getElementById("sitePanel").innerHTML = `
   <div class="section">
@@ -381,25 +389,31 @@ document.getElementById("sitePanel").innerHTML = `
         : `<span class="empty">Link not added</span>`}
     </div>
   </div>
+document.getElementById("sitePanel").innerHTML = `
+  <div class="section">
+    <h3>SITE DETAILS</h3>
+    ...
+  </div>
+
+  <!-- ✅ STEP 3 GOES EXACTLY HERE -->
+  ${training ? `
+    <div class="section">
+      <h3>LAST TRAINING CONDUCTED</h3>
+      ...
+    </div>
+  ` : `
+    <div class="section">
+      <h3>LAST TRAINING CONDUCTED</h3>
+      <div class="content empty">No training record available</div>
+    </div>
+  `}
 
   <div class="section">
-    <h3>LAST TRAINING CONDUCTED</h3>
-    <div class="content training-card">
-      <div class="training-meta">
-        <div>
-          <span class="label">Date</span>
-          <span class="value">18 Dec 2025</span>
-        </div>
-        <div>
-          <span class="label">Type</span>
-          <span class="value">Fire Safety Drill</span>
-        </div>
-      </div>
-      <div class="training-image">
-        <img src="https://via.placeholder.com/600x360?text=Training+Image">
-      </div>
-    </div>
+    <h3>ROUTE & NAVIGATION</h3>
+    ...
   </div>
+`;
+}
 
   <div class="section">
     <h3>ROUTE & NAVIGATION</h3>
@@ -467,9 +481,12 @@ function updateSummary(sites){
 
 async function initMap(){
   map=new google.maps.Map(document.getElementById("map"),{center:{lat:17.5,lng:78.4},zoom:7});
-  guards=await fetch(GUARDS_URL).then(r=>r.json());
-  allSites=await fetch(SITES_URL).then(r=>r.json());
-  renderSites(allSites);
+ guards = await fetch(GUARDS_URL).then(r=>r.json());
+allSites = await fetch(SITES_URL).then(r=>r.json());
+trainings = await fetch(TRAINING_URL).then(r=>r.json());
+
+renderSites(allSites);
+
 }
 </script>
 
@@ -478,6 +495,7 @@ async function initMap(){
 
 </body>
 </html>
+
 
 
 
