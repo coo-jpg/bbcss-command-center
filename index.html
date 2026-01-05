@@ -191,6 +191,17 @@ th{background:#020617;}
   <div class="summary-item"><div class="label">Absconding</div><div id="sumAbs" class="value">0</div></div>
 </div>
 
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL_HERE";
+  const SUPABASE_ANON_KEY = "PASTE_YOUR_ANON_PUBLIC_KEY_HERE";
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+</script>
+
 <script>
 /* LOGIN */
 const USERS=[{user:"admin",pass:"bbcss123"},{user:"ops",pass:"ops123"}];
@@ -205,9 +216,7 @@ function login(){
 if(sessionStorage.getItem("bbcss")==="1") loginScreen.style.display="none";
 
 /* DATA */
-const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
-const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
-const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
+
 const TRAINING_URL=`https://opensheet.elk.sh/${SHEET_ID}/Training`;
 
 let map,allSites=[],guards=[],trainings=[],markers=[],currentSites=[];
@@ -216,11 +225,39 @@ let lastClickedSite=null,startPoint=null,endPoint=null;
 /* MAP */
 function start(){ if(!window.google) return setTimeout(start,300); initMap(); }
 async function initMap(){
-  map=new google.maps.Map(document.getElementById("map"),{center:{lat:17.5,lng:78.4},zoom:7});
-  guards=await fetch(GUARDS_URL).then(r=>r.json());
-  trainings=await fetch(TRAINING_URL).then(r=>r.json());
-  allSites=await fetch(SITES_URL).then(r=>r.json());
-  filterState("ALL");
+  // LOAD SITES
+const { data: sitesData, error: sitesError } =
+  await supabaseClient.from('sites').select('*');
+
+if (sitesError) {
+  console.error(sitesError);
+  return;
+}
+allSites = sitesData.map(s => ({
+  Name: s.site_name,
+  Latitude: s.latitude,
+  Longitude: s.longitude,
+  State: "ALL", // placeholder (we'll improve later)
+  site_code: s.site_code
+}));
+
+// LOAD GUARDS (from view)
+const { data: guardsData, error: guardsError } =
+  await supabaseClient.from('guards_with_sites').select('*');
+
+if (guardsError) {
+  console.error(guardsError);
+  return;
+}
+guards = guardsData.map(g => ({
+  "Guard Name": g.name,
+  Rank: g.rank,
+  "Duty Status": g.status,
+  Name: g.site_name
+}));
+
+trainings = []; // keep empty for now
+
 }
 
 /* HELPERS */
@@ -318,4 +355,5 @@ function updateSummary(){
 
 </body>
 </html>
+
 
