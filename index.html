@@ -7,9 +7,30 @@
 
 <style>
 html,body{height:100%;margin:0;background:#0b0f1a;color:#e5e7eb;font-family:Arial,sans-serif;}
-#header{height:64px;background:#020617;display:flex;align-items:center;padding:0 18px;border-bottom:1px solid #1f2937;}
+
+#header{
+  height:64px;background:#020617;display:flex;align-items:center;
+  padding:0 18px;border-bottom:1px solid #1f2937;
+}
+#menuBtn{
+  background:none;border:none;color:#e5e7eb;
+  font-size:22px;cursor:pointer;margin-right:12px;
+}
 .logo{height:40px;margin-right:14px;}
 .header-title{flex:1;text-align:center;font-size:18px;font-weight:600;}
+
+#menuPanel{
+  position:fixed;top:64px;left:-220px;
+  width:220px;height:calc(100% - 64px);
+  background:#020617;border-right:1px solid #1f2937;
+  padding:12px;transition:.3s;z-index:9998;
+}
+#menuPanel.open{left:0;}
+#menuPanel h3{margin-top:0;font-size:14px;}
+#menuPanel button{margin-bottom:8px;}
+
+.page{padding:0;}
+.hidden{display:none;}
 
 .container{display:flex;height:calc(100vh - 64px - 54px);}
 #sidebar{width:420px;background:#0f172a;border-right:1px solid #1f2937;padding:14px;overflow-y:auto;}
@@ -48,28 +69,67 @@ input,select{
 
 <body>
 
+<!-- MENU PANEL -->
+<div id="menuPanel">
+  <h3>MENU</h3>
+  <button onclick="showPage('map')">🗺️ Command Center</button>
+  <button onclick="showPage('incidents')">🚨 Incidents</button>
+  <button onclick="showPage('attendance')">🕒 Attendance</button>
+  <button onclick="showPage('reports')">📊 Reports</button>
+  <button onclick="showPage('settings')">⚙️ Settings</button>
+</div>
+
+<!-- HEADER -->
 <div id="header">
+  <button id="menuBtn" onclick="toggleMenu()">☰</button>
   <img src="https://lh3.googleusercontent.com/d/12Xf4kpshWWpf-TntBM7dCTNyemEWPeUt" class="logo">
   <div class="header-title">BBCSS Command Center</div>
 </div>
 
-<div class="container">
-  <div id="sidebar">
+<!-- PAGE: MAP -->
+<div id="page-map" class="page">
 
-    <div class="section">
-      <h3>Admin Actions</h3>
-      <div class="content">
-        <button onclick="openAddSite()">➕ Add Site</button><br><br>
-        <button onclick="openAddGuard()">➕ Add Manpower</button>
+  <div class="container">
+    <div id="sidebar">
+
+      <div class="section">
+        <h3>Admin Actions</h3>
+        <div class="content">
+          <button onclick="openAddSite()">➕ Add Site</button><br><br>
+          <button onclick="openAddGuard()">➕ Add Manpower</button>
+        </div>
       </div>
+
+      <div id="sitePanel" class="empty">Click a site pin</div>
     </div>
 
-    <div id="sitePanel" class="empty">Click a site pin</div>
+    <div id="map"></div>
   </div>
 
-  <div id="map"></div>
 </div>
 
+<!-- PLACEHOLDER PAGES -->
+<div id="page-incidents" class="page hidden">
+  <h2 style="padding:16px">🚨 Incidents</h2>
+  <p style="padding:16px">Incident module coming soon.</p>
+</div>
+
+<div id="page-attendance" class="page hidden">
+  <h2 style="padding:16px">🕒 Attendance</h2>
+  <p style="padding:16px">Attendance module coming soon.</p>
+</div>
+
+<div id="page-reports" class="page hidden">
+  <h2 style="padding:16px">📊 Reports</h2>
+  <p style="padding:16px">Reports module coming soon.</p>
+</div>
+
+<div id="page-settings" class="page hidden">
+  <h2 style="padding:16px">⚙️ Settings</h2>
+  <p style="padding:16px">Settings module coming soon.</p>
+</div>
+
+<!-- SUMMARY -->
 <div id="summaryPanel">
   <div class="summary-item"><div class="label">Sites</div><div id="sumSites" class="value">0</div></div>
   <div class="summary-item"><div class="label">Guards</div><div id="sumGuards" class="value">0</div></div>
@@ -89,6 +149,14 @@ input,select{
 </div>
 
 <script>
+/* MENU */
+function toggleMenu(){ menuPanel.classList.toggle("open"); }
+function showPage(page){
+  document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));
+  document.getElementById("page-"+page).classList.remove("hidden");
+  menuPanel.classList.remove("open");
+}
+
 /* CONFIG */
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyYqzF5voFvoJLDEWWzs4Rffg6V0seUg_1nc0SMTkjqf-Pw5q5fIij054f8KRWZzCda/exec";
 const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
@@ -96,31 +164,26 @@ const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
 const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
 
 let map, allSites=[], guards=[], markers=[], currentSites=[];
-let activeFormType="", startPoint=null, endPoint=null, lastSelectedSite=null;
+let startPoint=null,endPoint=null,lastSelectedSite=null;
 
 /* MAP INIT */
 async function initMap(){
-  map=new google.maps.Map(document.getElementById("map"),{center:{lat:17.5,lng:78.4},zoom:7});
+  map=new google.maps.Map(mapEl,{center:{lat:17.5,lng:78.4},zoom:7});
   guards=await fetch(GUARDS_URL).then(r=>r.json());
   allSites=await fetch(SITES_URL).then(r=>r.json());
   renderMarkers();
 }
+const mapEl=document.getElementById("map");
 
 /* MARKERS */
 function renderMarkers(){
   markers.forEach(m=>m.setMap(null)); markers=[];
   currentSites=allSites;
-
   currentSites.forEach(site=>{
     const m=new google.maps.Marker({
-      map,
-      position:{lat:+site.Latitude,lng:+site.Longitude},
-      title:site.Name
+      map,position:{lat:+site.Latitude,lng:+site.Longitude},title:site.Name
     });
-    m.addListener("click",()=>{
-      lastSelectedSite=site.Name;
-      showSite(site);
-    });
+    m.addListener("click",()=>{lastSelectedSite=site.Name;showSite(site);});
     markers.push(m);
   });
   updateSummary();
@@ -129,50 +192,34 @@ function renderMarkers(){
 /* SITE PANEL */
 function showSite(site){
   const siteGuards=guards.filter(g=>g["Site Name"]===site.Name);
-
   sitePanel.innerHTML=`
-    <div class="section">
-      <h3>Site Details</h3>
-      <div class="content"><b>${site.Name}</b></div>
-    </div>
-
-    <div class="section">
-      <h3>Route & Navigation</h3>
+    <div class="section"><h3>Site Details</h3><div class="content"><b>${site.Name}</b></div></div>
+    <div class="section"><h3>Route & Navigation</h3>
       <div class="content">
         <button onclick='setStart(${JSON.stringify(site)})'>Set Start</button><br><br>
         <button onclick='setEnd(${JSON.stringify(site)})'>Set Destination</button><br><br>
         <button onclick='openRoute()'>Open in Google Maps</button>
       </div>
     </div>
-
-    <div class="section">
-      <h3>Guards</h3>
-      <div class="content">${guardsTable(siteGuards)}</div>
-    </div>
-  `;
+    <div class="section"><h3>Guards</h3><div class="content">${guardsTable(siteGuards)}</div></div>`;
 }
 
 /* ROUTING */
-function setStart(site){startPoint=site;}
-function setEnd(site){endPoint=site;}
+function setStart(s){startPoint=s;}
+function setEnd(s){endPoint=s;}
 function openRoute(){
   if(!startPoint||!endPoint) return alert("Set both start & destination");
-  window.open(`https://www.google.com/maps/dir/?api=1&origin=${startPoint.Latitude},${startPoint.Longitude}&destination=${endPoint.Latitude},${endPoint.Longitude}`,"_blank");
+  window.open(`https://www.google.com/maps/dir/?api=1&origin=${startPoint.Latitude},${startPoint.Longitude}&destination=${endPoint.Latitude},${endPoint.Longitude}`);
 }
 
-/* GUARDS TABLE */
+/* TABLE */
 function guardsTable(list){
   if(!list.length) return "<div class='empty'>No guards</div>";
   return `<table><tr><th>#</th><th>Name</th><th>ID</th><th>Rank</th><th>Status</th></tr>
-    ${list.map((g,i)=>`
-      <tr class="${g["Duty Status"]==="On Duty"?"on-duty":g["Duty Status"]==="Off Duty"?"off-duty":"absconding"}">
-        <td>${i+1}</td>
-        <td>${g["Guard Name"]}</td>
-        <td>${g["Guard ID"]||""}</td>
-        <td>${g.Rank}</td>
-        <td>${g["Duty Status"]}</td>
-      </tr>`).join("")}
-  </table>`;
+  ${list.map((g,i)=>`
+    <tr class="${g["Duty Status"]==="On Duty"?"on-duty":g["Duty Status"]==="Off Duty"?"off-duty":"absconding"}">
+      <td>${i+1}</td><td>${g["Guard Name"]}</td><td>${g["Guard ID"]||""}</td><td>${g.Rank}</td><td>${g["Duty Status"]}</td>
+    </tr>`).join("")}</table>`;
 }
 
 /* SUMMARY */
@@ -186,88 +233,9 @@ function updateSummary(){
   sumAbs.innerText=g.filter(x=>x["Duty Status"]==="Absconding").length;
 }
 
-/* FORMS */
-function openAddSite(){
-  activeFormType="Sites";
-  formTitle.innerText="Add Site";
-  formBody.innerHTML=`
-    <input id="f1" placeholder="Site Name">
-    <input id="f2" placeholder="Latitude">
-    <input id="f3" placeholder="Longitude">
-    <input id="f4" placeholder="State">`;
-  formModal.style.display="block";
-}
-
-function openAddGuard(){
-  activeFormType="Guards";
-  formTitle.innerText="Add Manpower";
-
-  const siteOptions = allSites.map(s =>
-    `<option ${s.Name===lastSelectedSite?"selected":""}>${s.Name}</option>`
-  ).join("");
-
-  formBody.innerHTML=`
-    <label>Site</label>
-    <select id="f1">${siteOptions}</select>
-    <label>Guard Name</label>
-    <input id="f2">
-    <label>Guard ID</label>
-    <input id="f3">
-    <label>Rank</label>
-    <input id="f4">
-    <label>Shift</label>
-    <input id="f5">
-    <label>Status</label>
-    <select id="f6">
-      <option>On Duty</option>
-      <option>Off Duty</option>
-      <option>Absconding</option>
-    </select>`;
-  formModal.style.display="block";
-}
-
-function closeForm(){formModal.style.display="none";}
-
-/* SUBMIT */
-function submitForm(){
-  let row = [];
-
-  if(activeFormType === "Sites"){
-    row = [f1.value, f2.value, f3.value, f4.value];
-  }
-
-  if(activeFormType === "Guards"){
-    row = [
-      f1.value, // Site
-      f2.value, // Guard Name
-      f3.value, // Guard ID
-      f4.value, // Rank
-      "",       // Phone
-      f5.value, // Shift
-      f6.value  // Status
-    ];
-  }
-
-  // 🔑 no-cors IS REQUIRED ON GITHUB PAGES
-  fetch(SCRIPT_URL + "?type=" + activeFormType, {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify(row)
-  });
-
-  // We cannot read response — assume success
-  alert("Saved successfully");
-  closeForm();
-
-  // Reload to fetch fresh data
-  setTimeout(() => location.reload(), 700);
-}
-
-
 window.onload=initMap;
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
-
