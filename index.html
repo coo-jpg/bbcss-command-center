@@ -191,73 +191,51 @@ th{background:#020617;}
   <div class="summary-item"><div class="label">Absconding</div><div id="sumAbs" class="value">0</div></div>
 </div>
 
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = ""https://oypejznuvzghggcuksys.supabase.co"";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95cGVqem51dnpnaGdnY3Vrc3lzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc1ODA0NzMsImV4cCI6MjA4MzE1NjQ3M30.WVAt-887556vrs2uSvzCkZU95TkPjXpe2BEwOHccl0o";
-
-  const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-</script>
-
 <script>
 /* LOGIN */
 const USERS=[{user:"admin",pass:"bbcss123"},{user:"ops",pass:"ops123"}];
+
 function login(){
-  if(!USERS.find(x=>x.user===username.value && x.pass===password.value)){
-    loginError.innerText="Invalid credentials"; return;
+  if(!USERS.find(u=>u.user===username.value && u.pass===password.value)){
+    loginError.innerText="Invalid credentials";
+    return;
   }
   sessionStorage.setItem("bbcss","1");
   loginScreen.style.display="none";
   start();
 }
-if(sessionStorage.getItem("bbcss")==="1") loginScreen.style.display="none";
+
+if(sessionStorage.getItem("bbcss")==="1"){
+  loginScreen.style.display="none";
+  start();
+}
 
 /* DATA */
-
+const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
+const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
+const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
 const TRAINING_URL=`https://opensheet.elk.sh/${SHEET_ID}/Training`;
 
 let map,allSites=[],guards=[],trainings=[],markers=[],currentSites=[];
 let lastClickedSite=null,startPoint=null,endPoint=null;
 
 /* MAP */
-function start(){ if(!window.google) return setTimeout(start,300); initMap(); }
+function start(){
+  if(!window.google) return setTimeout(start,300);
+  initMap();
+}
+
 async function initMap(){
-  // LOAD SITES
-const { data: sitesData, error: sitesError } =
-  await supabaseClient.from('sites').select('*');
+  map=new google.maps.Map(document.getElementById("map"),{
+    center:{lat:17.5,lng:78.4},
+    zoom:7
+  });
 
-if (sitesError) {
-  console.error(sitesError);
-  return;
-}
-allSites = sitesData.map(s => ({
-  Name: s.site_name,
-  Latitude: s.latitude,
-  Longitude: s.longitude,
-  State: "ALL", // placeholder (we'll improve later)
-  site_code: s.site_code
-}));
+  guards=await fetch(GUARDS_URL).then(r=>r.json());
+  trainings=await fetch(TRAINING_URL).then(r=>r.json());
+  allSites=await fetch(SITES_URL).then(r=>r.json());
 
-// LOAD GUARDS (from view)
-const { data: guardsData, error: guardsError } =
-  await supabaseClient.from('guards_with_sites').select('*');
-
-if (guardsError) {
-  console.error(guardsError);
-  return;
-}
-guards = guardsData.map(g => ({
-  "Guard Name": g.name,
-  Rank: g.rank,
-  "Duty Status": g.status,
-  Name: g.site_name
-}));
-
-trainings = []; // keep empty for now
-
+  filterState("ALL");
 }
 
 /* HELPERS */
@@ -277,11 +255,14 @@ function guardsTable(list){
 
 /* FILTER */
 function filterState(state){
-  currentSites=state==="ALL"?allSites:allSites.filter(s=>s.State===state);
+  currentSites = state==="ALL" ? allSites : allSites.filter(s=>s.State===state);
   markers.forEach(m=>m.setMap(null)); markers=[];
+
   currentSites.forEach(site=>{
     const m=new google.maps.Marker({
-      map,position:{lat:+site.Latitude,lng:+site.Longitude},title:site.Name
+      map,
+      position:{lat:+site.Latitude,lng:+site.Longitude},
+      title:site.Name
     });
     m.addListener("click",()=>{
       lastClickedSite={lat:+site.Latitude,lng:+site.Longitude,name:site.Name};
@@ -294,8 +275,8 @@ function filterState(state){
 
 /* SITE PANEL */
 function showSite(site){
-  const siteGuards=guards.filter(g=>g.Name===site.Name);
-  const training=trainings
+  const siteGuards = guards.filter(g=>g["Site Name"]===site.Name);
+  const training = trainings
     .filter(t=>t["Site.Name"]===site.Name)
     .sort((a,b)=>new Date(b["Training Date"])-new Date(a["Training Date"]))[0];
 
@@ -304,8 +285,7 @@ function showSite(site){
     <b>${site.Name}</b><br>
     ${site.ClientName||""}<br>
     ${site.ClientPhone||""}<br><br>
-    ${site.SiteDescription||""}<br><br>
-    ${site.ReferenceLink?`<a href="${site.ReferenceLink}" target="_blank" style="color:#60a5fa">Reference</a>`:""}
+    ${site.SiteDescription||""}
   </div></div>
 
   <div class="section"><h3>Last Training</h3>
@@ -315,16 +295,10 @@ function showSite(site){
         <div><span class="label">Date</span><span class="value">${training["Training Date"]}</span></div>
         <div><span class="label">Type</span><span class="value">${training["TrainingType"]}</span></div>
       </div>
-      <div class="training-image"><img src="${training["Training image url"]}"></div>
+      <div class="training-image">
+        <img src="${training["Training Image URL"]}">
+      </div>
     </div>`:`<div class="content empty">No training record</div>`}
-  </div>
-
-  <div class="section"><h3>Route & Navigation</h3>
-    <div class="content">
-      <button onclick="startPoint=lastClickedSite">Set Start</button><br><br>
-      <button onclick="endPoint=lastClickedSite">Set Destination</button><br><br>
-      <button onclick="openRoute()">Open in Google Maps</button>
-    </div>
   </div>
 
   <div class="section"><h3>Guards</h3>
@@ -332,16 +306,10 @@ function showSite(site){
   </div>`;
 }
 
-/* ROUTE */
-function openRoute(){
-  if(!startPoint||!endPoint) return alert("Set start and destination");
-  window.open(`https://www.google.com/maps/dir/?api=1&origin=${startPoint.lat},${startPoint.lng}&destination=${endPoint.lat},${endPoint.lng}`);
-}
-
 /* SUMMARY */
 function updateSummary(){
   const names=currentSites.map(s=>s.Name);
-  const g=guards.filter(x=>names.includes(x.Name));
+  const g=guards.filter(x=>names.includes(x["Site Name"]));
   sumSites.innerText=currentSites.length;
   sumGuards.innerText=g.length;
   sumOn.innerText=g.filter(x=>x["Duty Status"]==="On Duty").length;
@@ -350,11 +318,6 @@ function updateSummary(){
 }
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
-
-
+<script src="https://maps.googleapis.com/maps/api/js?key="AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
-
-
-
