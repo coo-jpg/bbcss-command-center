@@ -6,152 +6,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-html,body{
-  height:100%;
-  margin:0;
-  background:#0b0f1a;
-  color:#e5e7eb;
-  font-family:Arial,sans-serif;
-}
-
-/* HEADER */
-#header{
-  height:64px;
-  background:#020617;
-  display:flex;
-  align-items:center;
-  padding:0 18px;
-  border-bottom:1px solid #1f2937;
-}
+html,body{height:100%;margin:0;background:#0b0f1a;color:#e5e7eb;font-family:Arial,sans-serif;}
+#header{height:64px;background:#020617;display:flex;align-items:center;padding:0 18px;border-bottom:1px solid #1f2937;}
 .logo{height:40px;margin-right:14px;}
-.header-title{
-  flex:1;
-  text-align:center;
-  font-size:18px;
-  font-weight:600;
-}
-
-/* LOGIN */
-#loginScreen{
-  position:fixed;
-  inset:0;
-  background:radial-gradient(circle at top,#020617,#000);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-.login-box{
-  width:360px;
-  background:#0f172a;
-  padding:32px;
-  border-radius:10px;
-  border:1px solid #1f2937;
-  text-align:center;
-}
-.login-logo{width:140px;margin-bottom:18px;}
-.login-box input{
-  width:100%;
-  padding:11px;
-  margin-bottom:12px;
-  background:#020617;
-  border:1px solid #1f2937;
-  border-radius:6px;
-  color:#e5e7eb;
-}
-.login-box button{
-  width:100%;
-  padding:11px;
-  background:#2563eb;
-  border:none;
-  border-radius:6px;
-  color:#fff;
-  font-weight:600;
-}
-#loginError{color:#ef4444;font-size:12px}
-
-/* LAYOUT */
-.container{
-  display:flex;
-  height:calc(100vh - 64px - 54px);
-}
-
-/* SIDEBAR */
-#sidebar{
-  width:420px;
-  background:#0f172a;
-  border-right:1px solid #1f2937;
-  padding:14px;
-  overflow-y:auto;
-}
+.header-title{flex:1;text-align:center;font-size:18px;font-weight:600;}
+.container{display:flex;height:calc(100vh - 64px - 54px);}
+#sidebar{width:420px;background:#0f172a;border-right:1px solid #1f2937;padding:14px;overflow-y:auto;}
 .section{margin-bottom:14px;}
-.section h3{
-  font-size:13px;
-  padding:6px 8px;
-  background:#020617;
-  border-left:4px solid #2563eb;
-  margin:0 0 6px;
-  text-transform:uppercase;
-}
-.section .content{
-  background:#0b1220;
-  padding:8px;
-  border:1px solid #1f2937;
-  font-size:13px;
-}
-button{
-  width:100%;
-  padding:6px;
-  background:#020617;
-  border:1px solid #2563eb;
-  color:#e5e7eb;
-  cursor:pointer;
-}
+.section h3{font-size:13px;padding:6px 8px;background:#020617;border-left:4px solid #2563eb;margin:0 0 6px;text-transform:uppercase;}
+.section .content{background:#0b1220;padding:8px;border:1px solid #1f2937;font-size:13px;}
+button{width:100%;padding:6px;background:#020617;border:1px solid #2563eb;color:#e5e7eb;cursor:pointer;}
 .empty{color:#6b7280}
-
-/* TABLE */
 table{width:100%;border-collapse:collapse;font-size:12px;}
 th,td{padding:5px;border:1px solid #1f2937;}
 th{background:#020617;}
 .on-duty{background:rgba(16,185,129,0.15);}
 .off-duty{background:rgba(245,158,11,0.15);}
 .absconding{background:rgba(239,68,68,0.25);font-weight:bold;}
-
-/* MAP */
 #map{flex:1;}
-
-/* SUMMARY */
-#summaryPanel{
-  position:fixed;
-  bottom:0;left:0;right:0;
-  height:54px;
-  background:#020617;
-  border-top:1px solid #1f2937;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-}
+#summaryPanel{position:fixed;bottom:0;left:0;right:0;height:54px;background:#020617;border-top:1px solid #1f2937;display:flex;justify-content:space-around;align-items:center;}
 .summary-item{text-align:center;font-size:12px;}
 .summary-item .label{color:#9ca3af;font-size:11px;}
 .summary-item .value{font-size:16px;font-weight:bold;}
+input,select{width:100%;padding:6px;margin-bottom:8px;background:#020617;border:1px solid #1f2937;color:#e5e7eb;}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen">
-  <div class="login-box">
-    <img src="https://lh3.googleusercontent.com/d/12Xf4kpshWWpf-TntBM7dCTNyemEWPeUt" class="login-logo">
-    <h3>BBCSS Command Center</h3>
-    <input id="username" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <p id="loginError"></p>
-  </div>
-</div>
-
-<!-- HEADER -->
 <div id="header">
   <img src="https://lh3.googleusercontent.com/d/12Xf4kpshWWpf-TntBM7dCTNyemEWPeUt" class="logo">
   <div class="header-title">BBCSS Command Center</div>
@@ -159,16 +41,18 @@ th{background:#020617;}
 
 <div class="container">
   <div id="sidebar">
+
     <div class="section">
-      <h3>STATE VIEW</h3>
+      <h3>ADMIN ACTIONS</h3>
       <div class="content">
-        <button onclick="filterState('ALL')">All States</button><br><br>
-        <button onclick="filterState('Telangana')">Telangana</button><br><br>
-        <button onclick="filterState('Karnataka')">Karnataka</button>
+        <button onclick="openAddSite()">➕ Add Site</button><br><br>
+        <button onclick="openAddGuard()">➕ Add Manpower</button>
       </div>
     </div>
+
     <div id="sitePanel" class="empty">Click a site pin</div>
   </div>
+
   <div id="map"></div>
 </div>
 
@@ -180,116 +64,58 @@ th{background:#020617;}
   <div class="summary-item"><div class="label">Absconding</div><div id="sumAbs" class="value">0</div></div>
 </div>
 
+<!-- MODAL -->
+<div id="formModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999">
+  <div style="width:380px;background:#0f172a;margin:10% auto;padding:20px;border:1px solid #1f2937">
+    <h3 id="formTitle"></h3>
+    <div id="formBody"></div>
+    <button onclick="submitForm()">Submit</button>
+    <button onclick="closeForm()">Cancel</button>
+  </div>
+</div>
+
 <script>
-/* LOGIN */
-const USERS=[{user:"admin",pass:"bbcss123"},{user:"ops",pass:"ops123"}];
-
-function login(){
-  if(!USERS.find(u=>u.user===username.value && u.pass===password.value)){
-    loginError.innerText="Invalid credentials";
-    return;
-  }
-  sessionStorage.setItem("bbcss","1");
-  loginScreen.style.display="none";
-  start();
-}
-
-if(sessionStorage.getItem("bbcss")==="1"){
-  loginScreen.style.display="none";
-  start();
-}
-
-/* DATA */
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzVvJ2hZ5PYxf7ohM_Eb8G_KZtrlTwHsI3G0hZtIeq58POF4KnPG9iTw2tuzeOmPM_j/exec";
 const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
 const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
 const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
-const TRAINING_URL=`https://opensheet.elk.sh/${SHEET_ID}/Training`;
 
-let map,allSites=[],guards=[],trainings=[],markers=[],currentSites=[];
-
-/* MAP */
-function start(){
-  if(!window.google) return setTimeout(start,300);
-  initMap();
-}
+let map,allSites=[],guards=[],markers=[],currentSites=[],activeFormType="";
 
 async function initMap(){
-  map=new google.maps.Map(document.getElementById("map"),{
-    center:{lat:17.5,lng:78.4},
-    zoom:7
-  });
-
-  guards = await fetch(GUARDS_URL).then(r=>r.json());
-  trainings = await fetch(TRAINING_URL).then(r=>r.json());
-  allSites = await fetch(SITES_URL).then(r=>r.json());
-
-  sitePanel.innerHTML="<div class='empty'>Click a site pin</div>";
+  map=new google.maps.Map(document.getElementById("map"),{center:{lat:17.5,lng:78.4},zoom:7});
+  guards=await fetch(GUARDS_URL).then(r=>r.json());
+  allSites=await fetch(SITES_URL).then(r=>r.json());
   filterState("ALL");
 }
 
-/* HELPERS */
-function guardsTable(list){
-  if(!list.length) return "<div class='empty'>No guards</div>";
-  return `<table>
-    <tr><th>#</th><th>Name</th><th>Rank</th><th>Status</th></tr>
-    ${list.map((g,i)=>`
-      <tr class="${g["Duty Status"]==="On Duty"?"on-duty":
-                   g["Duty Status"]==="Off Duty"?"off-duty":"absconding"}">
-        <td>${i+1}</td>
-        <td>${g["Guard Name"]}</td>
-        <td>${g.Rank}</td>
-        <td>${g["Duty Status"]}</td>
-      </tr>`).join("")}
-  </table>`;
-}
-
-/* FILTER */
-function filterState(state){
-  currentSites = state==="ALL" ? allSites : allSites.filter(s=>s.State===state);
+function filterState(){
   markers.forEach(m=>m.setMap(null)); markers=[];
-
+  currentSites=allSites;
   currentSites.forEach(site=>{
-    const m=new google.maps.Marker({
-      map,
-      position:{lat:+site.Latitude,lng:+site.Longitude},
-      title:site.Name
-    });
+    const m=new google.maps.Marker({map,position:{lat:+site.Latitude,lng:+site.Longitude},title:site.Name});
     m.addListener("click",()=>showSite(site));
     markers.push(m);
   });
   updateSummary();
 }
 
-/* SITE PANEL */
-function showSite(site){
-  const siteGuards = guards.filter(g => g["Site Name"] === site.Name);
-  const training = trainings
-    .filter(t => t["Site Name"] === site.Name)
-    .sort((a,b)=>new Date(b["Training Date"])-new Date(a["Training Date"]))[0];
-
-  sitePanel.innerHTML=`
-    <div class="section">
-      <h3>Site Details</h3>
-      <div class="content">
-        <b>${site.Name}</b><br>
-        ${site.ClientName||""}<br>
-        ${site.ClientPhone||""}
-      </div>
-    </div>
-
-    <div class="section">
-      <h3>Last Training</h3>
-      <div class="content">${training ? training["Training Date"] : "No training record"}</div>
-    </div>
-
-    <div class="section">
-      <h3>Guards</h3>
-      <div class="content">${guardsTable(siteGuards)}</div>
-    </div>
-  `;
+function guardsTable(list){
+  if(!list.length) return "<div class='empty'>No guards</div>";
+  return `<table><tr><th>#</th><th>Name</th><th>Rank</th><th>Status</th></tr>
+    ${list.map((g,i)=>`
+      <tr class="${g["Duty Status"]==="On Duty"?"on-duty":g["Duty Status"]==="Off Duty"?"off-duty":"absconding"}">
+        <td>${i+1}</td><td>${g["Guard Name"]}</td><td>${g.Rank}</td><td>${g["Duty Status"]}</td>
+      </tr>`).join("")}</table>`;
 }
 
-/* SUMMARY */
+function showSite(site){
+  const siteGuards=guards.filter(g=>g["Site Name"]===site.Name);
+  sitePanel.innerHTML=`
+    <div class="section"><h3>Site</h3><div class="content"><b>${site.Name}</b></div></div>
+    <div class="section"><h3>Guards</h3><div class="content">${guardsTable(siteGuards)}</div></div>`;
+}
+
 function updateSummary(){
   const names=currentSites.map(s=>s.Name);
   const g=guards.filter(x=>names.includes(x["Site Name"]));
@@ -299,10 +125,45 @@ function updateSummary(){
   sumOff.innerText=g.filter(x=>x["Duty Status"]==="Off Duty").length;
   sumAbs.innerText=g.filter(x=>x["Duty Status"]==="Absconding").length;
 }
+
+/* FORMS */
+function openAddSite(){
+  activeFormType="Sites";
+  formTitle.innerText="Add Site";
+  formBody.innerHTML=`
+    <input id="f1" placeholder="Site Name">
+    <input id="f2" placeholder="Latitude">
+    <input id="f3" placeholder="Longitude">
+    <input id="f4" placeholder="State">`;
+  formModal.style.display="block";
+}
+
+function openAddGuard(){
+  activeFormType="Guards";
+  formTitle.innerText="Add Manpower";
+  formBody.innerHTML=`
+    <input id="f1" placeholder="Site Name">
+    <input id="f2" placeholder="Guard Name">
+    <input id="f3" placeholder="Rank">
+    <input id="f4" placeholder="Shift">
+    <select id="f5"><option>On Duty</option><option>Off Duty</option><option>Absconding</option></select>`;
+  formModal.style.display="block";
+}
+
+function closeForm(){formModal.style.display="none";}
+
+function submitForm(){
+  let row=[];
+  if(activeFormType==="Sites") row=[f1.value,f2.value,f3.value,f4.value];
+  if(activeFormType==="Guards") row=[f1.value,f2.value,f3.value,"",f4.value,f5.value];
+
+  fetch(SCRIPT_URL+"?type="+activeFormType,{method:"POST",body:JSON.stringify(row)})
+    .then(()=>{alert("Saved");location.reload();});
+}
+
+window.onload=initMap;
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
-
-
