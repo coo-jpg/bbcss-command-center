@@ -6,7 +6,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-html,body{height:100%;margin:0;background:#0b0f1a;color:#e5e7eb;font-family:Arial,sans-serif;}
+html,body{
+  height:100%;margin:0;
+  background:#0b0f1a;color:#e5e7eb;
+  font-family:Arial,sans-serif;
+}
+
+/* ================= HEADER ================= */
 #header{
   position:relative;
   height:64px;
@@ -25,12 +31,9 @@ html,body{height:100%;margin:0;background:#0b0f1a;color:#e5e7eb;font-family:Aria
   color:#e5e7eb;
   font-size:22px;
   cursor:pointer;
-
-  /* 🔑 OVERRIDE GLOBAL BUTTON STYLE */
   width:auto;
   padding:0;
 }
-
 
 /* perfectly centered logo + title */
 #headerCenter{
@@ -42,40 +45,83 @@ html,body{height:100%;margin:0;background:#0b0f1a;color:#e5e7eb;font-family:Aria
   align-items:center;
   gap:12px;
 }
-
-.logo{
-  height:40px;
-}
-
+.logo{height:40px;}
 .header-title{
   font-size:18px;
   font-weight:600;
   white-space:nowrap;
 }
 
+/* ================= MENU ================= */
 #menuPanel{
-  position:fixed;top:64px;left:-220px;width:220px;height:calc(100% - 64px);
-  background:#020617;border-right:1px solid #1f2937;padding:12px;transition:.3s;z-index:9998;
+  position:fixed;
+  top:64px;
+  left:-220px;
+  width:220px;
+  height:calc(100% - 64px);
+  background:#020617;
+  border-right:1px solid #1f2937;
+  padding:12px;
+  transition:.3s;
+  z-index:9998;
 }
 #menuPanel.open{left:0;}
 #menuPanel h3{margin-top:0;font-size:14px;}
 #menuPanel button{margin-bottom:8px;}
 
-.page{padding:0;}
-.hidden{display:none;}
+/* ================= LAYOUT ================= */
+.page{display:none;}
+.page.active{display:block;}
 
-.container{display:flex;height:calc(100vh - 64px - 54px);}
-#sidebar{width:420px;background:#0f172a;border-right:1px solid #1f2937;padding:14px;overflow-y:auto;}
+.container{
+  display:flex;
+  height:calc(100vh - 64px - 54px);
+}
+
+#sidebar{
+  width:420px;
+  background:#0f172a;
+  border-right:1px solid #1f2937;
+  padding:14px;
+  overflow-y:auto;
+}
 
 .section{margin-bottom:14px;}
-.section h3{font-size:13px;padding:6px 8px;background:#020617;border-left:4px solid #2563eb;margin:0 0 6px;text-transform:uppercase;}
-.section .content{background:#0b1220;padding:8px;border:1px solid #1f2937;font-size:13px;}
+.section h3{
+  font-size:13px;
+  padding:6px 8px;
+  background:#020617;
+  border-left:4px solid #2563eb;
+  margin:0 0 6px;
+  text-transform:uppercase;
+}
+.section .content{
+  background:#0b1220;
+  padding:8px;
+  border:1px solid #1f2937;
+  font-size:13px;
+}
 
-button{width:100%;padding:7px;background:#020617;border:1px solid #2563eb;color:#e5e7eb;cursor:pointer;}
+button{
+  width:100%;
+  padding:7px;
+  background:#020617;
+  border:1px solid #2563eb;
+  color:#e5e7eb;
+  cursor:pointer;
+}
+
 .empty{color:#6b7280}
 
-table{width:100%;border-collapse:collapse;font-size:12px;}
-th,td{padding:5px;border:1px solid #1f2937;}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+}
+th,td{
+  padding:5px;
+  border:1px solid #1f2937;
+}
 th{background:#020617;}
 .on-duty{background:rgba(16,185,129,.15);}
 .off-duty{background:rgba(245,158,11,.15);}
@@ -84,45 +130,53 @@ th{background:#020617;}
 #map{flex:1;}
 
 #summaryPanel{
-  position:fixed;bottom:0;left:0;right:0;height:54px;
-  background:#020617;border-top:1px solid #1f2937;
-  display:flex;justify-content:space-around;align-items:center;
+  position:fixed;
+  bottom:0;left:0;right:0;
+  height:54px;
+  background:#020617;
+  border-top:1px solid #1f2937;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
 }
 .summary-item{text-align:center;font-size:12px;}
 .summary-item .label{color:#9ca3af;font-size:11px;}
 .summary-item .value{font-size:16px;font-weight:bold;}
 
 input,select{
-  width:100%;padding:7px;margin-bottom:8px;
-  background:#020617;border:1px solid #1f2937;color:#e5e7eb;
+  width:100%;
+  padding:7px;
+  margin-bottom:8px;
+  background:#020617;
+  border:1px solid #1f2937;
+  color:#e5e7eb;
 }
 </style>
 </head>
 
 <body>
 
-<!-- MENU -->
+<!-- ================= MENU ================= -->
 <div id="menuPanel">
   <h3>MENU</h3>
   <button onclick="showPage('map')">🗺️ Command Center</button>
-  <button onclick="showPage('incidents')">🚨 Incidents</button>
+  <button onclick="showPage('site-details')">🏢 Site Details</button>
   <button onclick="showPage('attendance')">🕒 Attendance</button>
   <button onclick="showPage('reports')">📊 Reports</button>
   <button onclick="showPage('settings')">⚙️ Settings</button>
 </div>
 
-<!-- HEADER -->
+<!-- ================= HEADER ================= -->
 <div id="header">
   <button id="menuBtn" onclick="toggleMenu()">☰</button>
-
   <div id="headerCenter">
     <img src="https://lh3.googleusercontent.com/d/12Xf4kpshWWpf-TntBM7dCTNyemEWPeUt" class="logo">
     <span class="header-title">BBCSS Command Center</span>
   </div>
 </div>
 
-<!-- PAGE: MAP -->
-<div id="page-map" class="page">
+<!-- ================= PAGE: MAP ================= -->
+<div id="page-map" class="page active">
   <div class="container">
     <div id="sidebar">
       <div class="section">
@@ -138,13 +192,47 @@ input,select{
   </div>
 </div>
 
-<!-- PLACEHOLDERS -->
-<div id="page-incidents" class="page hidden"><h2 style="padding:16px">🚨 Incidents</h2></div>
-<div id="page-attendance" class="page hidden"><h2 style="padding:16px">🕒 Attendance</h2></div>
-<div id="page-reports" class="page hidden"><h2 style="padding:16px">📊 Reports</h2></div>
-<div id="page-settings" class="page hidden"><h2 style="padding:16px">⚙️ Settings</h2></div>
+<!-- ================= PAGE: SITE DETAILS ================= -->
+<div id="page-site-details" class="page">
+  <div style="padding:16px">
 
-<!-- SUMMARY -->
+    <h2>🏢 Site Details</h2>
+
+    <div class="section">
+      <h3>Select Site</h3>
+      <div class="content">
+        <select id="siteSelect" onchange="loadSiteDetails()">
+          <option value="">-- Select Site --</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Site Profile</h3>
+      <div class="content" id="siteProfile">
+        <span class="empty">Select a site</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Active Guards</h3>
+      <div class="content" id="activeGuards"></div>
+    </div>
+
+    <div class="section">
+      <h3>Reserve Guards</h3>
+      <div class="content" id="reserveGuards"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= OTHER PAGES ================= -->
+<div id="page-attendance" class="page"><h2 style="padding:16px">Attendance (Coming Soon)</h2></div>
+<div id="page-reports" class="page"><h2 style="padding:16px">Reports (Coming Soon)</h2></div>
+<div id="page-settings" class="page"><h2 style="padding:16px">Settings (Coming Soon)</h2></div>
+
+<!-- ================= SUMMARY ================= -->
 <div id="summaryPanel">
   <div class="summary-item"><div class="label">Sites</div><div id="sumSites" class="value">0</div></div>
   <div class="summary-item"><div class="label">Guards</div><div id="sumGuards" class="value">0</div></div>
@@ -153,134 +241,127 @@ input,select{
   <div class="summary-item"><div class="label">Absconding</div><div id="sumAbs" class="value">0</div></div>
 </div>
 
-<!-- MODAL -->
-<div id="formModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999">
-  <div style="width:400px;background:#0f172a;margin:8% auto;padding:20px;border:1px solid #1f2937">
-    <h3 id="formTitle"></h3>
-    <div id="formBody"></div>
-    <button onclick="submitForm()">Submit</button>
-    <button onclick="closeForm()">Cancel</button>
-  </div>
-</div>
-
 <script>
-/* MENU */
+/* ================= MENU ================= */
 function toggleMenu(){menuPanel.classList.toggle("open");}
 function showPage(p){
-  document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
-  document.getElementById("page-"+p).classList.remove("hidden");
+  document.querySelectorAll(".page").forEach(pg=>pg.classList.remove("active"));
+  document.getElementById("page-"+p).classList.add("active");
   menuPanel.classList.remove("open");
 }
 
-/* CONFIG */
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyYqzF5voFvoJLDEWWzs4Rffg6V0seUg_1nc0SMTkjqf-Pw5q5fIij054f8KRWZzCda/exec";
+/* ================= CONFIG ================= */
 const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
 const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
 const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
+const SITE_DETAILS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Site_Details`;
+const GUARD_MASTER_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guard_Master`;
 
-const sitePanel=document.getElementById("sitePanel");
-const formModal=document.getElementById("formModal");
-const formTitle=document.getElementById("formTitle");
-const formBody=document.getElementById("formBody");
+let map, allSites=[], guards=[], siteDetails=[], guardMaster=[], markers=[];
 
-let map,allSites=[],guards=[],markers=[],currentSites=[];
-let startPoint=null,endPoint=null,lastSelectedSite=null,activeFormType="";
-
-/* MAP */
+/* ================= MAP ================= */
 async function initMap(){
-  map=new google.maps.Map(document.getElementById("map"),{center:{lat:17.5,lng:78.4},zoom:7});
-  guards=await fetch(GUARDS_URL).then(r=>r.json());
+  map=new google.maps.Map(document.getElementById("map"),{
+    center:{lat:17.5,lng:78.4},zoom:7
+  });
+
   allSites=await fetch(SITES_URL).then(r=>r.json());
+  guards=await fetch(GUARDS_URL).then(r=>r.json());
+  siteDetails=await fetch(SITE_DETAILS_URL).then(r=>r.json());
+  guardMaster=await fetch(GUARD_MASTER_URL).then(r=>r.json());
+
   renderMarkers();
+  populateSiteDropdown();
 }
 
+/* ================= MARKERS ================= */
 function renderMarkers(){
-  markers.forEach(m=>m.setMap(null));markers=[];
-  currentSites=allSites;
-  currentSites.forEach(site=>{
-    const m=new google.maps.Marker({map,position:{lat:+site.Latitude,lng:+site.Longitude},title:site.Name});
-    m.addListener("click",()=>{lastSelectedSite=site.Name;showSite(site);});
+  markers.forEach(m=>m.setMap(null));
+  markers=[];
+  allSites.forEach(site=>{
+    const m=new google.maps.Marker({
+      map,
+      position:{lat:+site.Latitude,lng:+site.Longitude},
+      title:site.Name
+    });
+    m.addListener("click",()=>showSite(site));
     markers.push(m);
   });
   updateSummary();
 }
 
+/* ================= SITE PANEL ================= */
 function showSite(site){
-  const siteGuards=guards.filter(g=>g["Site Name"]===site.Name);
-  sitePanel.innerHTML=`
-    <div class="section"><h3>Site Details</h3><div class="content"><b>${site.Name}</b></div></div>
-    <div class="section"><h3>Route</h3><div class="content">
-      <button onclick='setStart(${JSON.stringify(site)})'>Set Start</button><br><br>
-      <button onclick='setEnd(${JSON.stringify(site)})'>Set Destination</button><br><br>
-      <button onclick='openRoute()'>Open Google Maps</button>
-    </div></div>
-    <div class="section"><h3>Guards</h3><div class="content">${guardsTable(siteGuards)}</div></div>`;
+  const sg=guards.filter(g=>g["Site Name"]===site.Name);
+  sitePanel.innerHTML=`<b>${site.Name}</b><br><br>${guardsTable(sg)}`;
 }
 
-function setStart(s){startPoint=s;}
-function setEnd(s){endPoint=s;}
-function openRoute(){
-  if(!startPoint||!endPoint)return alert("Set both points");
-  window.open(`https://www.google.com/maps/dir/?api=1&origin=${startPoint.Latitude},${startPoint.Longitude}&destination=${endPoint.Latitude},${endPoint.Longitude}`);
-}
-
+/* ================= TABLES ================= */
 function guardsTable(list){
-  if(!list.length)return"<div class='empty'>No guards</div>";
-  return `<table><tr><th>#</th><th>Name</th><th>ID</th><th>Rank</th><th>Status</th></tr>
-    ${list.map((g,i)=>`
-      <tr class="${g["Duty Status"]==="On Duty"?"on-duty":g["Duty Status"]==="Off Duty"?"off-duty":"absconding"}">
-        <td>${i+1}</td><td>${g["Guard Name"]}</td><td>${g["Guard ID"]||""}</td><td>${g.Rank}</td><td>${g["Duty Status"]}</td>
-      </tr>`).join("")}</table>`;
+  if(!list.length) return "<div class='empty'>No guards</div>";
+  return `<table>
+    <tr><th>Name</th><th>ID</th><th>Rank</th><th>Status</th></tr>
+    ${list.map(g=>`
+      <tr>
+        <td>${g["Guard Name"]}</td>
+        <td>${g["Guard ID"]||""}</td>
+        <td>${g.Rank||""}</td>
+        <td>${g["Duty Status"]}</td>
+      </tr>`).join("")}
+  </table>`;
 }
 
+/* ================= SUMMARY ================= */
 function updateSummary(){
-  const names=currentSites.map(s=>s.Name);
-  const g=guards.filter(x=>names.includes(x["Site Name"]));
-  sumSites.innerText=currentSites.length;
-  sumGuards.innerText=g.length;
-  sumOn.innerText=g.filter(x=>x["Duty Status"]==="On Duty").length;
-  sumOff.innerText=g.filter(x=>x["Duty Status"]==="Off Duty").length;
-  sumAbs.innerText=g.filter(x=>x["Duty Status"]==="Absconding").length;
+  sumSites.innerText=allSites.length;
+  sumGuards.innerText=guards.length;
+  sumOn.innerText=guards.filter(g=>g["Duty Status"]==="On Duty").length;
+  sumOff.innerText=guards.filter(g=>g["Duty Status"]==="Off Duty").length;
+  sumAbs.innerText=guards.filter(g=>g["Duty Status"]==="Absconding").length;
 }
 
-/* FORMS */
-function openAddSite(){
-  activeFormType="Sites";
-  formTitle.innerText="Add Site";
-  formBody.innerHTML=`
-    <input id="f1" placeholder="Site Name">
-    <input id="f2" placeholder="Latitude">
-    <input id="f3" placeholder="Longitude">
-    <input id="f4" placeholder="State">`;
-  formModal.style.display="block";
+/* ================= SITE DETAILS PAGE ================= */
+function populateSiteDropdown(){
+  const sel=document.getElementById("siteSelect");
+  siteDetails.forEach(s=>{
+    const o=document.createElement("option");
+    o.value=s["Site Name"];
+    o.textContent=s["Site Name"];
+    sel.appendChild(o);
+  });
 }
 
-function openAddGuard(){
-  activeFormType="Guards";
-  formTitle.innerText="Add Manpower";
-  const opts=allSites.map(s=>`<option ${s.Name===lastSelectedSite?"selected":""}>${s.Name}</option>`).join("");
-  formBody.innerHTML=`
-    <label>Site</label><select id="f1">${opts}</select>
-    <label>Name</label><input id="f2">
-    <label>Guard ID</label><input id="f3">
-    <label>Rank</label><input id="f4">
-    <label>Shift</label><input id="f5">
-    <label>Status</label>
-    <select id="f6"><option>On Duty</option><option>Off Duty</option><option>Absconding</option></select>`;
-  formModal.style.display="block";
+function loadSiteDetails(){
+  const name=siteSelect.value;
+  const site=siteDetails.find(s=>s["Site Name"]===name);
+  const g=guardMaster.filter(x=>x["Site Name"]===name);
+
+  siteProfile.innerHTML=`
+    <table>
+      <tr><th>Site Name</th><td>${site["Site Name"]}</td></tr>
+      <tr><th>Parent Account</th><td>${site["Parent Account"]}</td></tr>
+      <tr><th>Contact</th><td>${site["Account Contact Name"]}</td></tr>
+      <tr><th>Phone</th><td>${site["Account Contact Number"]}</td></tr>
+      <tr><th>GST</th><td>${site["GST Number"]}</td></tr>
+    </table>`;
+
+  activeGuards.innerHTML=buildGuardTable(g.filter(x=>x["Guard Type"]==="Active"));
+  reserveGuards.innerHTML=buildGuardTable(g.filter(x=>x["Guard Type"]==="Reserve"));
 }
 
-function closeForm(){formModal.style.display="none";}
-
-function submitForm(){
-  let row=[];
-  if(activeFormType==="Sites")row=[f1.value,f2.value,f3.value,f4.value];
-  if(activeFormType==="Guards")row=[f1.value,f2.value,f3.value,f4.value,"",f5.value,f6.value];
-
-  fetch(SCRIPT_URL+"?type="+activeFormType,{method:"POST",mode:"no-cors",body:JSON.stringify(row)});
-  alert("Saved successfully");
-  closeForm();
-  setTimeout(()=>location.reload(),700);
+function buildGuardTable(list){
+  if(!list.length) return "<div class='empty'>No records</div>";
+  return `<table>
+    <tr><th>Name</th><th>ID</th><th>Rank</th><th>Phone</th><th>Status</th></tr>
+    ${list.map(g=>`
+      <tr>
+        <td>${g["Guard Name"]}</td>
+        <td>${g["Guard ID Number"]}</td>
+        <td>${g.Rank}</td>
+        <td>${g["Phone Number"]}</td>
+        <td>${g["Duty Status"]}</td>
+      </tr>`).join("")}
+  </table>`;
 }
 
 window.onload=initMap;
@@ -289,6 +370,3 @@ window.onload=initMap;
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
-
-
-
