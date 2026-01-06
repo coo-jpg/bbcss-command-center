@@ -154,12 +154,26 @@ function closeForm(){formModal.style.display="none";}
 
 function submitForm(){
   let row=[];
-  if(activeFormType==="Sites") row=[f1.value,f2.value,f3.value,f4.value];
-  if(activeFormType==="Guards") row=[f1.value,f2.value,f3.value,"",f4.value,f5.value];
 
-  fetch(SCRIPT_URL+"?type="+activeFormType,{method:"POST",body:JSON.stringify(row)})
-    .then(()=>{alert("Saved");location.reload();});
+  if(activeFormType==="Sites"){
+    row=[f1.value,f2.value,f3.value,f4.value];
+  }
+
+  if(activeFormType==="Guards"){
+    row=[f1.value,f2.value,f3.value,"",f4.value,f5.value];
+  }
+
+  fetch(SCRIPT_URL + "?type=" + activeFormType, {
+    method:"POST",
+    mode:"no-cors",   // 🔑 IMPORTANT
+    body: JSON.stringify(row)
+  });
+
+  alert("Saved successfully");
+  closeForm();
+  setTimeout(()=>location.reload(),800);
 }
+
 
 window.onload=initMap;
 </script>
@@ -167,3 +181,4 @@ window.onload=initMap;
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
+
