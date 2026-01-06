@@ -109,17 +109,6 @@ button{
 }
 .empty{color:#6b7280}
 
-/* TRAINING */
-.training-card{display:flex;flex-direction:column;gap:10px;}
-.training-meta{display:flex;justify-content:space-between;}
-.training-meta .label{font-size:11px;color:#9ca3af;}
-.training-meta .value{font-weight:600;}
-.training-image img{
-  width:100%;
-  border-radius:6px;
-  border:1px solid #1f2937;
-}
-
 /* TABLE */
 table{width:100%;border-collapse:collapse;font-size:12px;}
 th,td{padding:5px;border:1px solid #1f2937;}
@@ -217,7 +206,6 @@ const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
 const TRAINING_URL=`https://opensheet.elk.sh/${SHEET_ID}/Training`;
 
 let map,allSites=[],guards=[],trainings=[],markers=[],currentSites=[];
-let lastClickedSite=null,startPoint=null,endPoint=null;
 
 /* MAP */
 function start(){
@@ -231,10 +219,11 @@ async function initMap(){
     zoom:7
   });
 
-  guards=await fetch(GUARDS_URL).then(r=>r.json());
-  trainings=await fetch(TRAINING_URL).then(r=>r.json());
-  allSites=await fetch(SITES_URL).then(r=>r.json());
+  guards = await fetch(GUARDS_URL).then(r=>r.json());
+  trainings = await fetch(TRAINING_URL).then(r=>r.json());
+  allSites = await fetch(SITES_URL).then(r=>r.json());
 
+  sitePanel.innerHTML="<div class='empty'>Click a site pin</div>";
   filterState("ALL");
 }
 
@@ -244,10 +233,11 @@ function guardsTable(list){
   return `<table>
     <tr><th>#</th><th>Name</th><th>Rank</th><th>Status</th></tr>
     ${list.map((g,i)=>`
-      <tr class="${g["Duty Status"]==="On Duty"?"on-duty":g["Duty Status"]==="Off Duty"?"off-duty":"absconding"}">
+      <tr class="${g["Duty Status"]==="On Duty"?"on-duty":
+                   g["Duty Status"]==="Off Duty"?"off-duty":"absconding"}">
         <td>${i+1}</td>
         <td>${g["Guard Name"]}</td>
-        <td>${g.Rank||"-"}</td>
+        <td>${g.Rank}</td>
         <td>${g["Duty Status"]}</td>
       </tr>`).join("")}
   </table>`;
@@ -264,10 +254,7 @@ function filterState(state){
       position:{lat:+site.Latitude,lng:+site.Longitude},
       title:site.Name
     });
-    m.addListener("click",()=>{
-      lastClickedSite={lat:+site.Latitude,lng:+site.Longitude,name:site.Name};
-      showSite(site);
-    });
+    m.addListener("click",()=>showSite(site));
     markers.push(m);
   });
   updateSummary();
@@ -275,35 +262,31 @@ function filterState(state){
 
 /* SITE PANEL */
 function showSite(site){
-  const siteGuards = guards.filter(g=>g["Site Name"]===site.Name);
+  const siteGuards = guards.filter(g => g["Site Name"] === site.Name);
   const training = trainings
-    .filter(t=>t["Site.Name"]===site.Name)
+    .filter(t => t["Site Name"] === site.Name)
     .sort((a,b)=>new Date(b["Training Date"])-new Date(a["Training Date"]))[0];
 
   sitePanel.innerHTML=`
-  <div class="section"><h3>Site Details</h3><div class="content">
-    <b>${site.Name}</b><br>
-    ${site.ClientName||""}<br>
-    ${site.ClientPhone||""}<br><br>
-    ${site.SiteDescription||""}
-  </div></div>
-
-  <div class="section"><h3>Last Training</h3>
-    ${training?`
-    <div class="content training-card">
-      <div class="training-meta">
-        <div><span class="label">Date</span><span class="value">${training["Training Date"]}</span></div>
-        <div><span class="label">Type</span><span class="value">${training["TrainingType"]}</span></div>
+    <div class="section">
+      <h3>Site Details</h3>
+      <div class="content">
+        <b>${site.Name}</b><br>
+        ${site.ClientName||""}<br>
+        ${site.ClientPhone||""}
       </div>
-      <div class="training-image">
-        <img src="${training["Training Image URL"]}">
-      </div>
-    </div>`:`<div class="content empty">No training record</div>`}
-  </div>
+    </div>
 
-  <div class="section"><h3>Guards</h3>
-    <div class="content">${guardsTable(siteGuards)}</div>
-  </div>`;
+    <div class="section">
+      <h3>Last Training</h3>
+      <div class="content">${training ? training["Training Date"] : "No training record"}</div>
+    </div>
+
+    <div class="section">
+      <h3>Guards</h3>
+      <div class="content">${guardsTable(siteGuards)}</div>
+    </div>
+  `;
 }
 
 /* SUMMARY */
