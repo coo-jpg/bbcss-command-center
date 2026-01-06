@@ -7,10 +7,46 @@
 
 <style>
 html,body{height:100%;margin:0;background:#0b0f1a;color:#e5e7eb;font-family:Arial,sans-serif;}
-#header{height:64px;background:#020617;display:flex;align-items:center;padding:0 18px;border-bottom:1px solid #1f2937;}
-#menuBtn{background:none;border:none;color:#e5e7eb;font-size:22px;cursor:pointer;margin-right:12px;}
-.logo{height:40px;margin-right:14px;}
-.header-title{flex:1;text-align:center;font-size:18px;font-weight:600;}
+#header{
+  position:relative;
+  height:64px;
+  background:#020617;
+  border-bottom:1px solid #1f2937;
+}
+
+/* menu button hard-left */
+#menuBtn{
+  position:absolute;
+  left:18px;
+  top:50%;
+  transform:translateY(-50%);
+  background:none;
+  border:none;
+  color:#e5e7eb;
+  font-size:22px;
+  cursor:pointer;
+}
+
+/* perfectly centered logo + title */
+#headerCenter{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo{
+  height:40px;
+}
+
+.header-title{
+  font-size:18px;
+  font-weight:600;
+  white-space:nowrap;
+}
 
 #menuPanel{
   position:fixed;top:64px;left:-220px;width:220px;height:calc(100% - 64px);
@@ -248,4 +284,5 @@ window.onload=initMap;
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
+
 
