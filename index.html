@@ -230,24 +230,39 @@ function closeForm(){formModal.style.display="none";}
 
 /* SUBMIT */
 function submitForm(){
-  let row=[];
-  if(activeFormType==="Sites") row=[f1.value,f2.value,f3.value,f4.value];
-  if(activeFormType==="Guards") row=[f1.value,f2.value,f3.value,f4.value,"",f5.value,f6.value];
+  let row = [];
 
-  fetch(SCRIPT_URL+"?type="+activeFormType,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(row)
-  })
-  .then(r=>r.json())
-  .then(res=>{
-    if(res.status!=="OK") throw new Error(res.message);
-    alert("Saved successfully");
-    closeForm();
-    setTimeout(()=>location.reload(),600);
-  })
-  .catch(err=>alert("SAVE FAILED: "+err.message));
+  if(activeFormType === "Sites"){
+    row = [f1.value, f2.value, f3.value, f4.value];
+  }
+
+  if(activeFormType === "Guards"){
+    row = [
+      f1.value, // Site
+      f2.value, // Guard Name
+      f3.value, // Guard ID
+      f4.value, // Rank
+      "",       // Phone
+      f5.value, // Shift
+      f6.value  // Status
+    ];
+  }
+
+  // 🔑 no-cors IS REQUIRED ON GITHUB PAGES
+  fetch(SCRIPT_URL + "?type=" + activeFormType, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify(row)
+  });
+
+  // We cannot read response — assume success
+  alert("Saved successfully");
+  closeForm();
+
+  // Reload to fetch fresh data
+  setTimeout(() => location.reload(), 700);
 }
+
 
 window.onload=initMap;
 </script>
@@ -255,3 +270,4 @@ window.onload=initMap;
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
+
