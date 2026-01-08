@@ -228,9 +228,30 @@ function renderMarkers(){
 }
 
 function showSite(site){
-  const list=guards.filter(g=>g["Site Name"]===site.Name);
-  sitePanel.innerHTML=`
+  const list = guards.filter(g => g["Site Name"] === site.Name);
+
+  const lat = site.Latitude;
+  const lng = site.Longitude;
+
+  sitePanel.innerHTML = `
     <b>${site.Name}</b><br><br>
+
+    <button
+      style="
+        width:100%;
+        padding:8px;
+        margin-bottom:10px;
+        background:#16a34a;
+        border:none;
+        color:#fff;
+        cursor:pointer;
+        font-weight:600;
+      "
+      onclick="openDirections(${lat}, ${lng})"
+    >
+      📍 Navigate (Google Maps)
+    </button>
+
     ${guardsTable(list)}
   `;
 }
@@ -254,3 +275,4 @@ function guardsTable(list){
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
+
