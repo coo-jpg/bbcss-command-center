@@ -198,6 +198,14 @@ th{background:#020617;}
         <h3>Required Strength</h3>
         <div id="siteStrength" class="content empty"></div>
       </div>
+      
+      <div class="section">
+  <h3>Latest Training</h3>
+  <div id="siteTraining" class="content empty">
+    No training data
+  </div>
+</div>
+
 
     </div>
 
@@ -226,6 +234,8 @@ let navStart = null;
 let navEnd = null;
 let siteDetails = [];
 let selectedSiteDetails = null;
+let trainingData = [];
+
 
 
 /* ================= AUTH ================= */
@@ -267,6 +277,8 @@ const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
 const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
 const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
 const SITE_DETAILS_URL =`https://opensheet.elk.sh/${SHEET_ID}/Site_Details`;
+const TRAINING_URL = `https://opensheet.elk.sh/${SHEET_ID}/Training`;
+
 
 
 let map,sites=[],guards=[],markers=[];
@@ -417,8 +429,9 @@ function guardsTable(list){
       </tr>`).join("")}
   </table>`;
 }
-  async function loadSiteMaster(){
+async function loadSiteMaster(){
   siteDetails = await fetch(SITE_DETAILS_URL).then(r=>r.json());
+  trainingData = await fetch(TRAINING_URL).then(r=>r.json());
 
   siteDetails.forEach(s=>{
     const opt = document.createElement("option");
@@ -446,6 +459,8 @@ function loadSiteDetails(unitName){
   renderSiteInfo(selectedSiteDetails);
   renderStrength(selectedSiteDetails);
   renderGuardDetails(unitName);
+  renderTraining(unitName);
+
 }
 
 function renderSiteInfo(site){
@@ -512,12 +527,46 @@ function renderGuardDetails(unitName){
     </table>
   `;
 }
+  function renderTraining(unitName){
+  const rows = trainingData
+    .filter(t => t["Site.Name"] === unitName || t["Site Name"] === unitName)
+    .sort((a,b)=> new Date(b["Training Date"]) - new Date(a["Training Date"]));
+
+  if (!rows.length){
+    siteTraining.innerHTML =
+      "<div class='empty'>No training records</div>";
+    return;
+  }
+
+  const latest = rows[0];
+
+  siteTraining.innerHTML = `
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Trainer</th>
+        <th>Image</th>
+      </tr>
+      <tr>
+        <td>${latest["Training Date"]}</td>
+        <td>${latest["Trainer Name"]}</td>
+        <td>
+          <a href="${latest["Training image url"]}" target="_blank">
+            View
+          </a>
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
 
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
+
 
 
 
