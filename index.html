@@ -169,6 +169,9 @@ th{background:#020617;}
 </div>
 
 <script>
+let navStart = null;
+let navEnd = null;
+
 /* ================= AUTH ================= */
 const USERS=[{u:"admin",p:"bbcss123"},{u:"ops",p:"ops123"}];
 function login(){
@@ -228,33 +231,132 @@ function renderMarkers(){
 }
 
 function showSite(site){
-  const list = guards.filter(g => g["Site Name"] === site.Name);
+  // Selection logic
+  if (!navStart) {
+    navStart = site;
+  } else if (!navEnd && site !== navStart) {
+    navEnd = site;
+  }
 
-  const lat = site.Latitude;
-  const lng = site.Longitude;
+  const list = guards.filter(g => g["Site Name"] === site.Name);
 
   sitePanel.innerHTML = `
     <b>${site.Name}</b><br><br>
 
+    <div style="font-size:12px;margin-bottom:8px">
+      <b>Selected Route</b><br>
+      Start: ${navStart ? navStart.Name : "—"}<br>
+      End: ${navEnd ? navEnd.Name : "—"}
+    </div>
+
     <button
+      ${navStart && navEnd ? "" : "disabled"}
       style="
         width:100%;
         padding:8px;
-        margin-bottom:10px;
-        background:#16a34a;
+        margin-bottom:6px;
+        background:${navStart && navEnd ? "#16a34a" : "#374151"};
         border:none;
         color:#fff;
-        cursor:pointer;
         font-weight:600;
+        cursor:pointer;
       "
-      onclick="openDirections(${lat}, ${lng})"
+      onclick="navigatePinToPin()"
     >
-      📍 Navigate (Google Maps)
+      Navigate Unit A to Unit B
+    </button>
+
+    <button
+      ${navEnd ? "disabled" : ""}
+      style="
+        width:100%;
+        padding:8px;
+        margin-bottom:6px;
+        background:#2563eb;
+        border:none;
+        color:#fff;
+        font-weight:600;
+        cursor:pointer;
+      "
+      onclick="navigateFromCurrent()"
+    >
+      Navigate From Current Location
+    </button>
+
+    <button
+      style="
+        width:100%;
+        padding:6px;
+        background:#1f2937;
+        border:1px solid #374151;
+        color:#9ca3af;
+        cursor:pointer;
+        font-size:12px;
+      "
+      onclick="resetNavigation()"
+    >
+      Reset Navigation
     </button>
 
     ${guardsTable(list)}
   `;
 }
+
+
+    <button
+      style="
+        width:100%;
+        padding:6px;
+        margin-bottom:10px;
+        background:#1f2937;
+        border:1px solid #374151;
+        color:#9ca3af;
+        cursor:pointer;
+        font-size:12px;
+      "
+      onclick="resetNavigation()"
+    >
+      🔄 Reset Route
+    </button>
+
+    ${guardsTable(list)}
+  `;
+}
+
+
+    ${guardsTable(list)}
+  `;
+}
+  function navigatePinToPin(){
+  if (!navStart || !navEnd) return;
+
+  const url =
+    `https://www.google.com/maps/dir/?api=1` +
+    `&origin=${navStart.Latitude},${navStart.Longitude}` +
+    `&destination=${navEnd.Latitude},${navEnd.Longitude}`;
+
+  window.open(url, "_blank");
+}
+
+function navigateFromCurrent(){
+  if (!navStart) return;
+
+  const target = navEnd || navStart;
+
+  const url =
+    `https://www.google.com/maps/dir/?api=1` +
+    `&destination=${target.Latitude},${target.Longitude}`;
+
+  window.open(url, "_blank");
+}
+
+function resetNavigation(){
+  navStart = null;
+  navEnd = null;
+  sitePanel.innerHTML =
+    "<div class='empty'>Navigation cleared. Select a site.</div>";
+}
+
   function openDirections(lat, lng){
   const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
   window.open(url, "_blank");
@@ -280,5 +382,6 @@ function guardsTable(list){
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
+
 
 
