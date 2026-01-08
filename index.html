@@ -255,6 +255,11 @@ function showSite(site){
     ${guardsTable(list)}
   `;
 }
+  function openDirections(lat, lng){
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+  window.open(url, "_blank");
+}
+
 
 function guardsTable(list){
   if(!list.length) return "<div class='empty'>No guards</div>";
@@ -275,4 +280,5 @@ function guardsTable(list){
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
+
 
