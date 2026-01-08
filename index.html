@@ -217,6 +217,12 @@ th{background:#020617;}
           No site selected
         </div>
       </div>
+      <div class="section">
+  <h3>Terminated from Duty</h3>
+  <div id="siteTerminated" class="content empty">
+    No terminated guards
+  </div>
+</div>
     </div>
 
   </div>
@@ -460,6 +466,7 @@ function loadSiteDetails(unitName){
   renderStrength(selectedSiteDetails);
   renderGuardDetails(unitName);
   renderTraining(unitName);
+  renderTerminatedGuards(unitName); // ✅ ADD
 
 }
 
@@ -559,6 +566,41 @@ function renderGuardDetails(unitName){
     </table>
   `;
 }
+function renderTerminatedGuards(unitName){
+  const list = guards.filter(g =>
+    g["Site Name"] === unitName &&
+    (g["Duty Status"] || "").toLowerCase() === "terminated"
+  );
+
+  if (!list.length){
+    siteTerminated.innerHTML =
+      "<div class='empty'>No terminated guards</div>";
+    return;
+  }
+
+  siteTerminated.innerHTML = `
+    <table>
+      <tr>
+        <th>Rank</th>
+        <th>Name</th>
+        <th>Shift</th>
+        <th>Status</th>
+        <th>Phone</th>
+        <th>Remark</th>
+      </tr>
+      ${list.map(g=>`
+        <tr>
+          <td>${g.Rank}</td>
+          <td>${g["Guard Name"]}</td>
+          <td>${g.Shift}</td>
+          <td>${g["Duty Status"]}</td>
+          <td>${g.Phone || ""}</td>
+          <td>${g["Last Update"] || g["OT Reason"] || ""}</td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
+}
 
 
 </script>
@@ -566,6 +608,7 @@ function renderGuardDetails(unitName){
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
+
 
 
 
