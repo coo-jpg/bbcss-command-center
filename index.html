@@ -131,8 +131,8 @@ th{background:#020617;}
 <!-- MENU -->
 <div id="menuPanel">
   <h3>MENU</h3>
-  <button onclick="showPage('map')">🗺️ Command Center</button>
-  <button onclick="showPage('site')">🏢 Site Details</button>
+  <button onclick="showPage('map')"> Command Center</button>
+  <button onclick="showPage('site')"> Unit Details</button>
 </div>
 
 <!-- HEADER -->
@@ -159,8 +159,61 @@ th{background:#020617;}
 
 <!-- SITE DETAILS PAGE -->
 <div id="page-site" class="page">
-  <h2 style="padding:20px">🏢 Site Details (Coming Next)</h2>
+  <div class="container">
+
+    <!-- LEFT PANEL -->
+    <div id="sidebar">
+
+      <!-- SEARCH + DROPDOWN -->
+      <div class="section">
+        <h3>Select Site</h3>
+        <div class="content">
+          <input
+            id="siteSearch"
+            placeholder="Search site..."
+            style="width:100%;padding:8px;margin-bottom:6px"
+            oninput="filterSiteDropdown()"
+          >
+
+          <select
+            id="siteSelect"
+            style="width:100%;padding:8px"
+            onchange="loadSiteDetails(this.value)"
+          >
+            <option value="">Select a site</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SITE INFO (VERTICAL) -->
+      <div class="section">
+        <h3>Site Information</h3>
+        <div id="siteInfo" class="content empty">
+          Select a site
+        </div>
+      </div>
+
+      <!-- REQUIRED STRENGTH -->
+      <div class="section">
+        <h3>Required Strength</h3>
+        <div id="siteStrength" class="content empty"></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div style="flex:1;padding:14px;overflow:auto">
+      <div class="section">
+        <h3>Guards at Site</h3>
+        <div id="siteGuards" class="content empty">
+          No site selected
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
+
 
 <!-- SUMMARY -->
 <div id="summaryPanel">
@@ -171,9 +224,13 @@ th{background:#020617;}
 <script>
 let navStart = null;
 let navEnd = null;
+let siteDetails = [];
+let selectedSiteDetails = null;
+
 
 /* ================= AUTH ================= */
 const USERS=[{u:"admin",p:"bbcss123"},{u:"ops",p:"ops123"}];
+
 function login(){
   if(!USERS.find(x=>x.u===username.value && x.p===password.value)){
     loginError.innerText="Invalid credentials";return;
@@ -183,7 +240,10 @@ function login(){
   header.style.display="block";
   menuPanel.style.display="block";
   summaryPanel.style.display="flex";
+
   initMap();
+  loadSiteMaster(); // ✅ ADD THIS
+
 }
 if(sessionStorage.getItem("bbcss")==="1"){
   loginScreen.style.display="none";
@@ -204,6 +264,8 @@ function showPage(p){
 const SHEET_ID="1sp0zxqkeBLyNLMcLgnmRRcwAm_AiXLI3XGSCvWvWnoM";
 const SITES_URL=`https://opensheet.elk.sh/${SHEET_ID}/Sites`;
 const GUARDS_URL=`https://opensheet.elk.sh/${SHEET_ID}/Guards`;
+const SITE_DETAILS_URL =`https://opensheet.elk.sh/${SHEET_ID}/Site_Details`;
+
 
 let map,sites=[],guards=[],markers=[];
 
@@ -353,11 +415,108 @@ function guardsTable(list){
       </tr>`).join("")}
   </table>`;
 }
+  async function loadSiteMaster(){
+  siteDetails = await fetch(SITE_DETAILS_URL).then(r=>r.json());
+
+  siteDetails.forEach(s=>{
+    const opt = document.createElement("option");
+    opt.value = s["Unit Name"];
+    opt.textContent = s["Unit Name"];
+    siteSelect.appendChild(opt);
+  });
+}
+
+function filterSiteDropdown(){
+  const q = siteSearch.value.toLowerCase();
+  [...siteSelect.options].forEach(o=>{
+    if(!o.value) return;
+    o.style.display = o.textContent.toLowerCase().includes(q)
+      ? "block" : "none";
+  });
+}
+
+function loadSiteDetails(unitName){
+  selectedSiteDetails = siteDetails.find(
+    s => s["Unit Name"] === unitName
+  );
+  if(!selectedSiteDetails) return;
+
+  renderSiteInfo(selectedSiteDetails);
+  renderStrength(selectedSiteDetails);
+  renderGuardDetails(unitName);
+}
+
+function renderSiteInfo(site){
+  siteInfo.innerHTML = `
+    <div><b>Parent Account:</b> ${site["Parent Account Name"]}</div>
+    <div><b>Unit Name:</b> ${site["Unit Name"]}</div>
+    <div><b>Unit Code:</b> ${site["Unit Code"]}</div>
+    <div><b>Client POC:</b> ${site["Unit Client POC"]}</div>
+    <div><b>POC Phone:</b> ${site["Unit Client POC Phone"]}</div>
+    <div><b>Escalation:</b> ${site["Escalation Contact"]}</div>
+    <div><b>Escalation Phone:</b> ${site["Escalation Contact Phone"]}</div>
+    <div><b>Email:</b> ${site["Escalation Contact Email"]}</div>
+    <div><b>Field Officer:</b> ${site["Field Officer"]}</div>
+    <div><b>FO Phone:</b> ${site["Field Officer Number"]}</div>
+    <div><b>Shift Pattern:</b> ${site["Shift Pattern"]}</div>
+    <div><b>Shift Change:</b> ${site["Shift Change Time"]}</div>
+  `;
+}
+
+function renderStrength(site){
+  siteStrength.innerHTML = `
+    <table>
+      <tr>
+        <th>T/G</th><th>S/G</th><th>HS/G</th><th>L/G</th>
+        <th>S/S</th><th>ASO</th><th>H/K</th><th>Misc</th>
+      </tr>
+      <tr>
+        <td>${site["T/G"]||0}</td>
+        <td>${site["S/G"]||0}</td>
+        <td>${site["HS/G"]||0}</td>
+        <td>${site["L/G"]||0}</td>
+        <td>${site["S/S"]||0}</td>
+        <td>${site["ASO"]||0}</td>
+        <td>${site["H/K"]||0}</td>
+        <td>${site["Misc"]||0}</td>
+      </tr>
+    </table>
+  `;
+}
+
+function renderGuardDetails(unitName){
+  const list = guards.filter(g => g["Site Name"] === unitName);
+
+  siteGuards.innerHTML = `
+    <table>
+      <tr>
+        <th>Rank</th>
+        <th>Name</th>
+        <th>Shift</th>
+        <th>Status</th>
+        <th>Phone</th>
+        <th>Remark</th>
+      </tr>
+      ${list.map(g=>`
+        <tr>
+          <td>${g.Rank}</td>
+          <td>${g["Guard Name"]}</td>
+          <td>${g.Shift}</td>
+          <td>${g["Duty Status"]}</td>
+          <td>${g.Phone}</td>
+          <td>${g["OT Reason"] || g["Last Update"] || ""}</td>
+        </tr>
+      `).join("")}
+    </table>
+  `;
+}
+
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
+
 
 
 
