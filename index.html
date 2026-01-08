@@ -250,8 +250,10 @@ if(sessionStorage.getItem("bbcss")==="1"){
   header.style.display="block";
   menuPanel.style.display="block";
   summaryPanel.style.display="flex";
+  initMap();         // ✅ ADD
+  loadSiteMaster();  // ✅ ADD
 }
-
+  
 /* ================= MENU ================= */
 function toggleMenu(){menuPanel.classList.toggle("open");}
 function showPage(p){
@@ -516,6 +518,7 @@ function renderGuardDetails(unitName){
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
+
 
 
 
