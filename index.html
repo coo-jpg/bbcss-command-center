@@ -130,10 +130,18 @@ th{background:#020617;}
 
 <!-- MENU -->
 <div id="menuPanel">
-  <h3>MENU</h3>
-  <button onclick="showPage('map')"> Command Center</button>
-  <button onclick="showPage('site')"> Unit Details</button>
+  <h3>COMMAND CENTER</h3>
+  <button onclick="showPage('ops-dashboard')">Ops Dashboard</button>
+  <button onclick="showPage('guards-master')">Guards Master</button>
+  <button onclick="showPage('attendance-sheet')">Attendance Sheet</button>
+  <button onclick="showPage('attendance-update')">Update Verified Attendances</button>
+  <button onclick="showPage('site')">Unit Details</button>
+
+  <h3>TRAINING</h3>
+  <button onclick="showPage('training-dashboard')">Training Dashboard</button>
+  <button onclick="showPage('training-schedule')">Training Schedule</button>
 </div>
+
 
 <!-- HEADER -->
 <div id="header">
@@ -160,6 +168,82 @@ th{background:#020617;}
 <!-- SITE DETAILS PAGE -->
 <div id="page-site" class="page">
   <div class="container">
+    <!-- OPS DASHBOARD -->
+<div id="page-ops-dashboard" class="page">
+  <div class="container">
+    <div style="padding:14px;width:100%;">
+      <h2>Ops Dashboard</h2>
+      <p>Live operational overview.</p>
+    </div>
+  </div>
+</div>
+
+<!-- GUARDS MASTER -->
+<div id="page-guards-master" class="page">
+  <div class="container">
+    <div style="padding:14px;width:100%;">
+      <h2>Guards Master</h2>
+      <div id="guardsMasterTable">Loading guards...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ATTENDANCE SHEET -->
+<div id="page-attendance-sheet" class="page">
+  <div class="container">
+    <div style="padding:14px;width:100%;">
+      <h2>Attendance Sheet</h2>
+      <div id="attendanceTable">No records yet</div>
+    </div>
+  </div>
+</div>
+
+<!-- UPDATE VERIFIED ATTENDANCE -->
+<div id="page-attendance-update" class="page">
+  <div class="container">
+    <div style="padding:14px;width:100%;max-width:600px;">
+      <h2>Update Verified Attendance</h2>
+
+      <input id="attSite" placeholder="Unit Name" style="width:100%;padding:8px"><br><br>
+      <input id="attGuard" placeholder="Guard Name" style="width:100%;padding:8px"><br><br>
+      <input id="attDate" type="date" style="width:100%;padding:8px"><br><br>
+
+      <select id="attStatus" style="width:100%;padding:8px">
+        <option>Present</option>
+        <option>Absent</option>
+        <option>Late</option>
+      </select><br><br>
+
+      <button onclick="submitAttendance()" 
+        style="width:100%;padding:10px;background:#16a34a;color:#fff;border:none;">
+        Save Attendance
+      </button>
+
+      <p id="attMsg"></p>
+    </div>
+  </div>
+</div>
+
+<!-- TRAINING DASHBOARD -->
+<div id="page-training-dashboard" class="page">
+  <div class="container">
+    <div style="padding:14px;width:100%;">
+      <h2>Training Dashboard</h2>
+      <p>Training overview.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TRAINING SCHEDULE -->
+<div id="page-training-schedule" class="page">
+  <div class="container">
+    <div style="padding:14px;width:100%;">
+      <h2>Training Schedule</h2>
+      <div id="trainingSchedule">Loading...</div>
+    </div>
+  </div>
+</div>
+
 
     <!-- LEFT PANEL -->
     <div id="sidebar">
@@ -601,6 +685,23 @@ function renderTerminatedGuards(unitName){
     </table>
   `;
 }
+function submitAttendance(){
+  const data = {
+    date: attDate.value,
+    unit: attSite.value,
+    guard: attGuard.value,
+    status: attStatus.value,
+    user: username.value || "Admin"
+  };
+
+  fetch("YOUR_APPS_SCRIPT_URL", {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {"Content-Type":"application/json"}
+  });
+
+  attMsg.innerText = "Attendance saved successfully";
+}
 
 
 </script>
@@ -608,6 +709,7 @@ function renderTerminatedGuards(unitName){
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyConhuaK9NwmTVHZ5yk7n54uuFTzqtG2wI"></script>
 </body>
 </html>
+
 
 
 
